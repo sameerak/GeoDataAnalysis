@@ -1,0 +1,10 @@
+# Ignore everything marked in this file
+*~
+target
+.classpath
+.settings
+.project
+*.im?
+*.iw?
+*.ip?
+.idea
