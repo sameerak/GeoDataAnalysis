@@ -66,7 +66,7 @@ public class Geotools {
 
         // Create a map content and add world map shape file
         map = new MapContent();
-        map.setTitle("geo data analysis");
+        map.setTitle("GPS Data Analysis");
 
         Style style = SLD.createSimpleStyle(featureSource.getSchema());
         Layer layer = new FeatureLayer(featureSource, style);
@@ -79,16 +79,17 @@ public class Geotools {
         JToolBar toolBar = mapFrame.getToolBar();
         toolBar.addSeparator();
 
-        JPanel datePanel = new JPanel();
-        datePanel.add(startDatePanel);
-        datePanel.add(endDatePanel);
-        toolBar.add(datePanel);
+        //Start date and End date for GPS trajectory data processing
+//        JPanel datePanel = new JPanel();
+//        datePanel.add(startDatePanel);
+//        datePanel.add(endDatePanel);
+//        toolBar.add(datePanel);
 
-        JPanel userPanel = new JPanel();
-        userPanel.add(new JButton(new PlotLakeMichigan()));
-        toolBar.add(userPanel);
+        JPanel customPanel = new JPanel();
+        customPanel.add(new JButton(new PlotLakeMichigan()));
+        toolBar.add(customPanel);
 
-        mapFrame.setSize(1200, 800);
+        mapFrame.setSize(900, 600);
         mapFrame.setVisible(true);
     }
 
