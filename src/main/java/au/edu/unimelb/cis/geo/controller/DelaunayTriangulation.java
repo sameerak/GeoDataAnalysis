@@ -8,13 +8,16 @@ import org.locationtech.jts.geom.LineString;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+
+import static au.edu.unimelb.cis.geo.model.util.isPointClockwiseFromLine;
 
 public class DelaunayTriangulation {
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
-    private HashMap<String, Triangle> triangleSet = new HashMap<String, Triangle>();
+    private HashMap<Integer, Triangle> triangleSet = new HashMap<Integer, Triangle>();
 
-    public ArrayList<LineString> createDelaunayTriangulation(ArrayList<Coordinate> pointSet) {
+    public ArrayList<Line> createDelaunayTriangulation(ArrayList<Coordinate> pointSet) {
 
         //validate the point set
 
@@ -40,10 +43,10 @@ public class DelaunayTriangulation {
             return null; //TODO throw exception: not enough points
         }
 
-        //S-hull algorithm [http://www.s-hull.org/paper/s_hull.pdf]
-
         //data structure to hold the edges of the Delaunay triangulation
-        ArrayList<LineString> DelaunayEdges = new ArrayList<>();
+        ArrayList<Line> DelaunayEdges = new ArrayList<>();
+
+        //S-hull algorithm [http://www.s-hull.org/paper/s_hull.pdf]
 
         //1. sort point
         Collections.sort(DelaunayPoints);
@@ -88,6 +91,15 @@ public class DelaunayTriangulation {
         convexHull.add(x_j);
         convexHull.add(x_k);
 
+        //if input only contain 3 points, return the right handed system
+        if (DelaunayPoints.size() == 3) {
+            DelaunayEdges.add(new Line(x_o, x_j));
+            DelaunayEdges.add(new Line(x_j, x_k));
+            DelaunayEdges.add(new Line(x_k, x_o));
+
+            return DelaunayEdges;
+        }
+
         //7. add initial 3 edges to Delaunay Triangulation;
         vertices[0] = x_o;
         vertices[1] = x_j;
@@ -95,30 +107,73 @@ public class DelaunayTriangulation {
         triangle = new Triangle(vertices);
         processTriangle(triangle);
 
-        //8. re-sort the remaining points according to x_i - C|^2,
+        //8. re-sort the remaining points with respect to the circumcenter of the first triangle,
         // to give points s_i
         triangle.SetCircumRadius();
-        Coordinate c = triangle.getCircumCenter();
+        Coordinate c = triangle.getCircumcenter();
+        Collections.sort(DelaunayPoints, (Comparator.<Coordinate>
+                comparingDouble(point1 -> point1.distance(c))
+                .thenComparingDouble(point2 -> point2.distance(c))));
+
+        //9. sequentially add the points s_i to the propagating 2D convex hull
+        // that is seeded with the triangle formed from x_0, x_j, x_k
+        // as a new point is added the facets of the 2D-hull that are visible to it form new triangles
+        int id = 3;
+        int resetID = 0; // To store the convex hull position to be replaced
         for (Coordinate point : DelaunayPoints) {
-            double length = point.distance(c);
-            //TODO rewrite the sorting function
-//            point.setDistanceToTarget(length);
+            ArrayList<Integer> postProcessIds = new ArrayList<Integer>();
+            for (int i = 0; i < convexHull.size(); i++) {
+                int h = (i - 1 < 0) ? convexHull.size() - 1 : i - 1;
+                int j = (i + 1 == convexHull.size()) ? 0 : i + 1;
+
+                Coordinate h_point = convexHull.get(h);
+                Coordinate i_point = convexHull.get(i);
+                Coordinate j_point = convexHull.get(j);
+
+                Line BeforeConvexHullEdge = new Line(h_point, i_point);
+                Line afterConvexHullEdge = new Line(i_point, j_point);
+
+                boolean isRotationClockwiseWRTBefore = isPointClockwiseFromLine(point, BeforeConvexHullEdge);
+                boolean isRotationClockwiseWRTAfter = isPointClockwiseFromLine(point, afterConvexHullEdge);
+
+                if (!isRotationClockwiseWRTBefore && !isRotationClockwiseWRTAfter) {
+                    triangle = new Triangle(new Coordinate[]{point, j_point, i_point});
+                    processTriangle(triangle);
+
+                    postProcessIds.add(i);
+                } else if (isRotationClockwiseWRTBefore && !isRotationClockwiseWRTAfter) {
+                    triangle = new Triangle(new Coordinate[]{point, j_point, i_point});
+                    processTriangle(triangle);
+
+                    resetID = j;
+                }
+            }
+
+            //processing convex hull changes
+            //Add new point at the location identified by resetID
+            convexHull.add(resetID, point);
+
+            //if there are points to be removed from convex hull
+            if (!postProcessIds.isEmpty()) {
+                Collections.sort(postProcessIds);
+                int key = -1;
+                for (int i = postProcessIds.size() -1; i >= 0; i--) {
+                    if (postProcessIds.get(i) >= resetID)
+                        convexHull.remove(postProcessIds.get(i) + 1);
+                    else {
+                        //Could not use key extracted from postProcessIds as is
+                        //had to assign it to new variable before using
+                        //otherwise convex hull point was not removed
+                        key = postProcessIds.get(i);
+                        convexHull.remove(key);
+                    }
+                }
+            }
         }
-        Collections.sort(DelaunayPoints);
+        System.out.println("# of triangles = " + triangleSet.size());
 
-        //TODO compose the result
-
+        DelaunayEdges.addAll(edgeSet.values());
         return DelaunayEdges; //return resulting triangulation
-    }
-
-    //line direction is 0 -> 1
-    public static boolean isPointClockwiseFromLine(Coordinate point, Line line) {
-        double crossProduct = (((point.getX() - line.getEndPoints()[0].getX())
-                * (line.getEndPoints()[1].getY() - line.getEndPoints()[0].getY()))
-                - (line.getEndPoints()[1].getX() - line.getEndPoints()[0].getX())
-                * (point.getY() - line.getEndPoints()[0].getY()));
-
-        return (crossProduct >= 0);
     }
 
     /**
@@ -156,13 +211,18 @@ public class DelaunayTriangulation {
         for (int i = 0; i < 3; i++) {
             int j = (i == 2) ? 0 : i + 1;
             Line line = getFromLineSet(triangle.getVertices()[i], triangle.getVertices()[j]);
+            if (line.getNumOfNeighbours() == 2) {
+                continue;
+            }
             if (line.getNumOfNeighbours() > 0) {
                 triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
             }
-            line.addNeighbour(triangle.getID());
+            if (line.getNumOfNeighbours() < 2) {
+                line.addNeighbour(triangle.getID());
+            }
             edges[i] = line;
         }
         triangle.setEdges(edges);
-        triangleSet.put(triangle.getID(), triangle);
+        triangleSet.put(triangleSet.size(), triangle);
     }
 }

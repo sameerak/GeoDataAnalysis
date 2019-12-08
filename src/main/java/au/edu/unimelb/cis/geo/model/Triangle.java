@@ -28,7 +28,7 @@ public class Triangle {
         ++numOfAdjacentTriangles;
     }
 
-    public Coordinate getCircumCenter() {
+    public Coordinate getCircumcenter() {
         return circumCenter;
     }
 

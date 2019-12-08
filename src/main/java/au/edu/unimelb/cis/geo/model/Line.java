@@ -115,4 +115,9 @@ public class Line {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return endPoints[0] + " -> " + endPoints[1];
+    }
 }
