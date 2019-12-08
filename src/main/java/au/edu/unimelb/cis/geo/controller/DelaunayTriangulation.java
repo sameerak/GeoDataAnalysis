@@ -90,21 +90,12 @@ public class DelaunayTriangulation {
         convexHull.add(x_j);
         convexHull.add(x_k);
 
-        //if input only contain 3 points, return the right handed system
-        if (DelaunayPoints.size() == 3) {
-            DelaunayEdges.add(new Line(x_o, x_j));
-            DelaunayEdges.add(new Line(x_j, x_k));
-            DelaunayEdges.add(new Line(x_k, x_o));
-
-            return DelaunayEdges;
-        }
-
         //7. add initial 3 edges to Delaunay Triangulation;
         vertices[0] = x_o;
         vertices[1] = x_j;
         vertices[2] = x_k;
         triangle = new Triangle(vertices);
-        processTriangle(triangle);
+        addTriangle(triangle);
 
         //8. re-sort the remaining points with respect to the circumcenter of the first triangle,
         // to give points s_i
@@ -137,12 +128,12 @@ public class DelaunayTriangulation {
 
                 if (!isRotationClockwiseWRTBefore && !isRotationClockwiseWRTAfter) {
                     triangle = new Triangle(new Coordinate[]{point, j_point, i_point});
-                    processTriangle(triangle);
+                    addTriangle(triangle);
 
                     postProcessIds.add(i);
                 } else if (isRotationClockwiseWRTBefore && !isRotationClockwiseWRTAfter) {
                     triangle = new Triangle(new Coordinate[]{point, j_point, i_point});
-                    processTriangle(triangle);
+                    addTriangle(triangle);
 
                     resetID = j;
                 }
@@ -205,8 +196,9 @@ public class DelaunayTriangulation {
      * 2. Add provided triangle to triangle set
      * @param triangle
      */
-    private void processTriangle(Triangle triangle) {
+    private void addTriangle(Triangle triangle) {
         Line[] edges = new Line[3];
+        int processedEdgeCount = 0;
         for (int i = 0; i < 3; i++) {
             int j = (i == 2) ? 0 : i + 1;
             Line line = getFromLineSet(triangle.getVertices()[i], triangle.getVertices()[j]);
@@ -215,13 +207,16 @@ public class DelaunayTriangulation {
             }
             if (line.getNumOfNeighbours() > 0) {
                 triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
+                processedEdgeCount++;
             }
             if (line.getNumOfNeighbours() < 2) {
                 line.addNeighbour(triangle.getID());
             }
             edges[i] = line;
         }
-        triangle.setEdges(edges);
-        triangleSet.put(triangleSet.size(), triangle);
+        if (processedEdgeCount >= 2) {
+            triangle.setEdges(edges);
+            triangleSet.put(triangleSet.size(), triangle);
+        }
     }
 }
