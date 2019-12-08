@@ -4,7 +4,6 @@ package au.edu.unimelb.cis.geo.controller;
 import au.edu.unimelb.cis.geo.model.Line;
 import au.edu.unimelb.cis.geo.model.Triangle;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.LineString;
 
 import java.util.ArrayList;
 import java.util.Collections;
