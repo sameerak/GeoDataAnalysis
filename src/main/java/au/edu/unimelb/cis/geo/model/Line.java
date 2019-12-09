@@ -9,8 +9,9 @@ public class Line {
     private double a, b, c, c1;
     private Coordinate centerPoint;
     private Coordinate euclideanCenterPoint;
-    private String[] neighbouringTriangleIDs = {"-1", "-1"};
+    private int[] neighbouringTriangleIDs = {-1, -1};
     private int numOfNeighbouringTriangles = 0;
+    private int flipCount;
 
     public Line(Coordinate point1, Coordinate point2){
         endPoints[0] = point1;
@@ -92,12 +93,12 @@ public class Line {
         return endPoints;
     }
 
-    public void addNeighbour(String neighbourID) {
+    public void addNeighbour(int neighbourID) {
         neighbouringTriangleIDs[numOfNeighbouringTriangles] = neighbourID;
         ++numOfNeighbouringTriangles;
     }
 
-    public String[] getAdjacentNeighbours() {
+    public int[] getAdjacentNeighbours() {
         return neighbouringTriangleIDs;
     }
 
@@ -105,15 +106,23 @@ public class Line {
         return numOfNeighbouringTriangles;
     }
 
-    public boolean replaceAdjacentNeighbour(String oldVal, String newVal) {
-        if (neighbouringTriangleIDs[0].equals(oldVal)) {
+    public boolean replaceAdjacentNeighbour(int oldVal, int newVal) {
+        if (neighbouringTriangleIDs[0] == oldVal) {
             neighbouringTriangleIDs[0] = newVal;
             return true;
-        } else if (neighbouringTriangleIDs[1].equals(oldVal)) {
+        } else if (neighbouringTriangleIDs[1] == oldVal) {
             neighbouringTriangleIDs[1] = newVal;
             return true;
         }
         return false;
+    }
+
+    public void setFlipCount(Line previousLine) {
+        this.flipCount = previousLine.getFlipCount() + 1;
+    }
+
+    public int getFlipCount() {
+        return flipCount;
     }
 
     @Override

@@ -160,7 +160,43 @@ public class DelaunayTriangulation {
                 }
             }
         }
+        //INFO: By this point a non-overlapping(planar) triangulation of the set of points is created
         System.out.println("# of triangles = " + triangleSet.size());
+
+        if (triangleSet.size() == 1) { //If there is only one triangle
+            DelaunayEdges.addAll(edgeSet.values());
+            return DelaunayEdges;
+        }
+
+        //adjacent pairs of triangles of this triangulation must be 'flipped'
+        // in order to create a Delaunay triangulation from the initial non-overlapping triangulation
+        boolean inner_flipped = false, outer_flipped = true;
+        int iterantion = 0;
+        while (outer_flipped) {
+            outer_flipped = false;
+            for (int i = 0; i < triangleSet.size(); i++) {
+                triangle = triangleSet.get(i);
+                for (int j = 0; j < 3; j++) {
+                    int k = (j == 2) ? 0 : j + 1;
+                    line = getFromLineSet(triangle.getVertices()[j], triangle.getVertices()[k]);
+                    if (line.getNumOfNeighbours() > 1) {
+                        int otherNeighbor = getOtherNeighbour(line.getAdjacentNeighbours(), i);
+                        if (otherNeighbor != -1) {
+                            inner_flipped = checkAndFlip(i, otherNeighbor);
+                        }
+                    }
+
+                    if (inner_flipped) {
+                        outer_flipped = true;
+                        inner_flipped = false;
+                        --i;
+                        break;
+                    }
+                }
+            }
+            ++iterantion;
+            System.out.println("iteration no = " + iterantion);
+        }
 
         DelaunayEdges.addAll(edgeSet.values());
         return DelaunayEdges; //return resulting triangulation
@@ -190,6 +226,27 @@ public class DelaunayTriangulation {
     }
 
     /**
+     * Removes the line between given points
+     *
+     * @param point1
+     * @param point2
+     * @return true if line exist and removed, false if line does not exist
+     */
+    private boolean removeFromLineSet(Coordinate point1, Coordinate point2) {
+        if (edgeSet.containsKey(point1.toString() + "," + point2.toString())) {
+            Line line = edgeSet.get(point1.toString() + "," + point2.toString());
+            edgeSet.remove(point1.toString() + "," + point2.toString());
+            return true;
+        } else if (edgeSet.containsKey(point2.toString() + "," + point1.toString())) {
+            Line line = edgeSet.get(point2.toString() + "," + point1.toString());
+            edgeSet.remove(point2.toString() + "," + point1.toString());
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Processes a triangle
      * 1. Create lines to make the triangle
      * 1.1 add neighbouring triangles to those lines
@@ -197,6 +254,7 @@ public class DelaunayTriangulation {
      * @param triangle
      */
     private void addTriangle(Triangle triangle) {
+        triangle.setIndex(triangleSet.size());
         Line[] edges = new Line[3];
         int processedEdgeCount = 0;
         for (int i = 0; i < 3; i++) {
@@ -210,7 +268,7 @@ public class DelaunayTriangulation {
                 processedEdgeCount++;
             }
             if (line.getNumOfNeighbours() < 2) {
-                line.addNeighbour(triangle.getID());
+                line.addNeighbour(triangle.getIndex());
             }
             edges[i] = line;
         }
@@ -218,5 +276,191 @@ public class DelaunayTriangulation {
             triangle.setEdges(edges);
             triangleSet.put(triangleSet.size(), triangle);
         }
+    }
+
+    /**
+     * From the array adjacentNeighbours select the neighbour other than the one provided at pos
+     *
+     * @param adjacentNeighbours
+     * @param pos
+     * @return
+     */
+    private int getOtherNeighbour(int[] adjacentNeighbours, int pos) {
+        if (adjacentNeighbours[0] == pos) {
+            return adjacentNeighbours[1];
+        }
+        return adjacentNeighbours[0];
+    }
+
+    /**
+     * Checks and flips given two triangles A and B if they violate Delaunay condition
+     *
+     a ------- b,2
+     |  A   /  |
+     |    /    |
+     |  /   B  |
+     c,3------ d,1
+     * @param triangleAIndex
+     * @param triangleBIndex
+     * @return
+     */
+    private boolean checkAndFlip(int triangleAIndex, int triangleBIndex) {
+        Triangle triangleA = triangleSet.get(triangleAIndex);
+        Triangle triangleB = triangleSet.get(triangleBIndex);
+        Coordinate[] triangle1 = triangleA.getVertices();
+        Coordinate[] triangle2 = triangleB.getVertices();
+
+//        System.out.println("Beginning = " +triangleAIndex + "," + triangleBIndex);
+//        System.out.println("triangleA = " + triangleA);
+//        System.out.println("triangleB = " + triangleB);
+
+        int D_index = -1,
+            A_index = -1,
+            B_index = -1,
+            C_index = -1;
+        //Following loop locates point D and sets up points for A,B,C from given triangles
+        for (int i = 0; i < 3; i++) { //this traverses triangleA clockwise
+            int j = (i == 2) ? 0 : i + 1;
+            Coordinate endpointB = triangle1[i];
+            Coordinate endpointC = triangle1[j];
+
+            for (int k = 2; k >= 0; k--) { //this traverses triangleB counter clockwise
+                int l = (k == 0) ? 2 : k - 1;
+                Coordinate endpoint1 = triangle2[k];
+                Coordinate endpoint2 = triangle2[l];
+
+                if (endpointB.equals(endpoint1) &&
+                        endpointC.equals(endpoint2)) {
+                    D_index = (l == 0) ? 2 : l - 1;
+                    A_index = (j == 2) ? 0 : j + 1;
+                    B_index = k;
+                    C_index = j;
+                    break;
+                }
+            }
+
+            if (D_index > -1) {
+                break;
+            }
+        }
+
+        if (D_index == -1) {
+            System.out.println(triangleAIndex + "," + triangleBIndex + " SKIPPING FLIP!!!! " +
+                    "As D is outside ABC Circumcircle");
+            return false;
+        }
+
+        Line BC = getFromLineSet(triangle2[B_index], triangle1[C_index]);
+        //Check if BC is previously flipped
+        if (BC.getFlipCount() >= 16) {
+            System.out.println(triangleAIndex + "," + triangleBIndex + " SKIPPING FLIP!!!! " +
+                    "As these triangles are already flipped before");
+            return false;
+        }
+
+        //If there is a line connecting points A and D there is no point performing determinant test
+        //as those D is not gonna be inside circum circle of ABC
+        if (edgeSet.containsKey(triangle2[D_index].toString() + "," + triangle1[A_index].toString()) ||
+                edgeSet.containsKey(triangle1[A_index].toString()+ "," + triangle2[D_index].toString())) {
+//            System.out.println(triangleA.getPos() + "," + triangleB.getPos() + "SKIPPING FLIP!!!! before determinant test");
+            return false;
+        }
+
+        //if the given triangles fail determinant test
+        if (isDInsideABC(triangleA, triangle2[D_index])) {
+            //flip given two triangles
+            //ABC and BDC -> ABD and ADC
+            //edge changes
+            //AB ^ BC ^ CA and BD ^ DC ^ CB -> AB ^ BD ^ DA and AD ^ DC ^ CA
+            //note that from triangle A and B, edges AB and DC respectively does not change
+            //we use this as reference point to decide which edges to replace
+            //edge CA from triangle A moves to triangle B after edge DC and
+            //edge BD from triangle B moves to triangle A after edge AB
+            //positions held by edges CA and BD in triangles A and B respectively are replaced by new edge AD
+            /*
+            a ------- b,2
+            |  \      |
+            | A  \  B |
+            |      \  |
+            c,3------ d,1
+             */
+            //adding new line
+            Line newLine = getFromLineSet(triangle2[D_index], triangle1[A_index]);
+
+            if (newLine.getNumOfNeighbours() > 0) { //if new flipping edge has at least one neighbour
+                System.out.println(triangleAIndex + "," + triangleBIndex + "SKIPPING FLIP!!!!");
+                return false; // These 2 triangles should not be flipped
+            }
+
+            Line[] Triangle1Edges = triangleA.getEdges(),
+                    Triangle2Edges = triangleB.getEdges();
+
+//            System.out.println("removing BC line = " + triangle1[C_index].getTweetID() +
+//                    "," + triangle2[B_index].getTweetID());
+//            System.out.println("Adding AD line = " + triangle2[D_index].getTweetID() +
+//                    "," + triangle1[A_index].getTweetID());
+
+            //remove BC line as it is going to be replaced by AD line
+            removeFromLineSet(triangle1[C_index], triangle2[B_index]);
+
+            //Add neighbours to new AD line
+            newLine.addNeighbour(triangleAIndex);
+            newLine.addNeighbour(triangleBIndex);
+            //setting AD is a flipped line so that next time it won't be flipped again
+            newLine.setFlipCount(BC);
+            int flipCount = newLine.getFlipCount();
+
+            Line tempLine;
+            //updating existing BD and AC lines as their neighbours are changing
+            tempLine = getFromLineSet(triangle2[B_index], triangle2[D_index]);
+            tempLine.replaceAdjacentNeighbour(triangleBIndex, triangleAIndex);
+
+            tempLine = getFromLineSet(triangle1[A_index], triangle1[C_index]);
+            tempLine.replaceAdjacentNeighbour(triangleAIndex, triangleBIndex);
+
+            //set C <- D and B <- A
+            triangle1[C_index] = triangle2[D_index];
+            Triangle1Edges[(A_index == 2) ? 0 : A_index + 1] = Triangle2Edges[B_index];
+            triangle2[B_index] = triangle1[A_index];
+            Triangle2Edges[(D_index == 2) ? 0 : D_index + 1] = Triangle1Edges[C_index];
+
+            Triangle2Edges[B_index] = newLine;
+            Triangle1Edges[C_index] = newLine;
+
+            triangleA.SetCircumRadius();
+            triangleB.SetCircumRadius();
+
+//            System.out.println(triangleA.getPos() + "," + triangleB.getPos() + " FLIPPING count = " + flipCount);
+//            System.out.println("triangleA = " + triangleA);
+//            System.out.println("triangleB = " + triangleB);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Checks if point D is residing inside circum circle of the triangle ABC
+     * Note this ABC are traversed counter clockwise direction
+     * More info - https://en.wikipedia.org/wiki/Delaunay_triangulation#Algorithms
+     A ------- C
+     |      /  |
+     |    /    |
+     |  /      |
+     B ------- D
+     * @param abc
+     * @param d
+     * @return True if and only if D lies inside the circumCircle ABC
+     */
+    public static boolean isDInsideABC(Triangle abc, Coordinate d) {
+        abc.SetCircumRadius();
+
+        double D_length = d.distance(abc.getCircumcenter());
+
+        if (D_length < abc.getCircumRadius()) {
+            return true;
+        }
+
+        return false;
     }
 }
