@@ -1,11 +1,15 @@
 package au.edu.unimelb.cis.geo.view;
 
+import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
+import au.edu.unimelb.cis.geo.model.Line;
 import au.edu.unimelb.cis.geo.view.util.DatePanel;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -53,6 +57,7 @@ public class Geotools {
     private static MapContent map;
     private static Layer pointLayer = null;
     private static Layer trajectoryLayer = null;
+    private static Layer DelaunayTriangulation = null;
     private static ArrayList<Layer> clusterLayers = null;
     private static JMapFrame mapFrame;
 
@@ -143,6 +148,7 @@ public class Geotools {
             DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", TYPE);
 
             Set<Coordinate> uniqueLocalities = getLakeMichiganPointSet();
+
             for (Coordinate locality : uniqueLocalities) {
                 Point point = geometryFactory.createPoint(locality);
                 featureBuilder = new SimpleFeatureBuilder(TYPE);
@@ -157,6 +163,18 @@ public class Geotools {
             Style style = createGeneralPointStyle();
             pointLayer = new FeatureLayer(featureCollection, style);
             map.addLayer(pointLayer);
+
+            DefaultFeatureCollection lineCollection = new DefaultFeatureCollection();
+            DelaunayTriangulation DTCreator = new DelaunayTriangulation();
+            ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(uniqueLocalities);
+
+            for (int i = 0; i < DelaunayEdges.size(); i++) {
+                lineCollection.add(getLineFeature(DelaunayEdges.get(i).getEndPoints()));
+            }
+
+            Style linestyle = SLD.createLineStyle(Color.red, 0.1F);
+            DelaunayTriangulation = new FeatureLayer(lineCollection, linestyle);
+            map.addLayer(DelaunayTriangulation);
         }
     }
 
@@ -196,5 +214,16 @@ public class Geotools {
         style.featureTypeStyles().add(fts);
 
         return style;
+    }
+
+    private static SimpleFeature getLineFeature(Coordinate[] coords) throws SchemaException {
+        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+        LineString line = geometryFactory.createLineString(coords);
+        SimpleFeatureType LINETYPE = DataUtilities.createType("test", "line", "the_geom:LineString");
+        SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder((SimpleFeatureType) LINETYPE);
+        featureBuilder.add(line);
+        SimpleFeature feature = featureBuilder.buildFeature(null);
+
+        return feature;
     }
 }

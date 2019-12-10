@@ -5,10 +5,7 @@ import au.edu.unimelb.cis.geo.model.Line;
 import au.edu.unimelb.cis.geo.model.Triangle;
 import org.locationtech.jts.geom.Coordinate;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
+import java.util.*;
 
 import static au.edu.unimelb.cis.geo.model.util.isPointClockwiseFromLine;
 
@@ -16,7 +13,7 @@ public class DelaunayTriangulation {
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
     private HashMap<Integer, Triangle> triangleSet = new HashMap<Integer, Triangle>();
 
-    public ArrayList<Line> createDelaunayTriangulation(ArrayList<Coordinate> pointSet) {
+    public ArrayList<Line> createDelaunayTriangulation(Set<Coordinate> pointSet) {
 
         //validate the point set
 
@@ -171,7 +168,7 @@ public class DelaunayTriangulation {
         //adjacent pairs of triangles of this triangulation must be 'flipped'
         // in order to create a Delaunay triangulation from the initial non-overlapping triangulation
         boolean inner_flipped = false, outer_flipped = true;
-        int iterantion = 0;
+        int iteration = 0;
         while (outer_flipped) {
             outer_flipped = false;
             for (int i = 0; i < triangleSet.size(); i++) {
@@ -194,9 +191,12 @@ public class DelaunayTriangulation {
                     }
                 }
             }
-            ++iterantion;
-            System.out.println("iteration no = " + iterantion);
+            ++iteration;
+            System.out.println("iteration no = " + iteration);
         }
+
+        //INFO: Delaunay triangulation is created by this point.
+        System.out.println("# of edges for Delaunay triangulation = " + edgeSet.size());
 
         DelaunayEdges.addAll(edgeSet.values());
         return DelaunayEdges; //return resulting triangulation
@@ -256,26 +256,18 @@ public class DelaunayTriangulation {
     private void addTriangle(Triangle triangle) {
         triangle.setIndex(triangleSet.size());
         Line[] edges = new Line[3];
-        int processedEdgeCount = 0;
         for (int i = 0; i < 3; i++) {
             int j = (i == 2) ? 0 : i + 1;
             Line line = getFromLineSet(triangle.getVertices()[i], triangle.getVertices()[j]);
             if (line.getNumOfNeighbours() == 2) {
                 continue;
             }
-            if (line.getNumOfNeighbours() > 0) {
-                triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
-                processedEdgeCount++;
-            }
-            if (line.getNumOfNeighbours() < 2) {
-                line.addNeighbour(triangle.getIndex());
-            }
+            triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
+            line.addNeighbour(triangle.getIndex());
             edges[i] = line;
         }
-        if (processedEdgeCount >= 2) {
             triangle.setEdges(edges);
             triangleSet.put(triangleSet.size(), triangle);
-        }
     }
 
     /**
@@ -305,6 +297,10 @@ public class DelaunayTriangulation {
      * @return
      */
     private boolean checkAndFlip(int triangleAIndex, int triangleBIndex) {
+        if (triangleAIndex == triangleBIndex) { //same triangle cannot be compared
+            return false;
+        }
+
         Triangle triangleA = triangleSet.get(triangleAIndex);
         Triangle triangleB = triangleSet.get(triangleBIndex);
         Coordinate[] triangle1 = triangleA.getVertices();
@@ -346,7 +342,7 @@ public class DelaunayTriangulation {
 
         if (D_index == -1) {
             System.out.println(triangleAIndex + "," + triangleBIndex + " SKIPPING FLIP!!!! " +
-                    "As D is outside ABC Circumcircle");
+                    "Cannot locate D");
             return false;
         }
 

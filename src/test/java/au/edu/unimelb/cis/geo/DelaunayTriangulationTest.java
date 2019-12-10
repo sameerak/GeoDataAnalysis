@@ -7,18 +7,19 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DelaunayTriangulationTest {
     private DelaunayTriangulation DTCreator;
-    private ArrayList<Coordinate> simpleTriangle;
-    private ArrayList<Coordinate> simpleTwoTriangles;
-    private ArrayList<Coordinate> pointSet;
+    private HashSet<Coordinate> simpleTriangle;
+    private HashSet<Coordinate> simpleTwoTriangles;
+    private HashSet<Coordinate> pointSet;
 
     private void initSimpleTriangle() {
-        simpleTriangle = new ArrayList<>(3);
+        simpleTriangle = new HashSet<Coordinate>(3);
         simpleTriangle.add(new Coordinate(1, 1));
         simpleTriangle.add(new Coordinate(1, 2));
         simpleTriangle.add(new Coordinate(2, 1.5));
@@ -29,7 +30,7 @@ public class DelaunayTriangulationTest {
     }
 
     private void initSimpleTwoTriangles() {
-        simpleTwoTriangles = new ArrayList<>(4);
+        simpleTwoTriangles = new HashSet<Coordinate>(4);
         simpleTwoTriangles.add(new Coordinate(1, 1));
         simpleTwoTriangles.add(new Coordinate(1, 2));
         simpleTwoTriangles.add(new Coordinate(2, 1.5));
@@ -41,12 +42,12 @@ public class DelaunayTriangulationTest {
     }
 
     private void initCounterUrquhartGraph() {
-        pointSet = new ArrayList<>();
-        pointSet.add(new Coordinate(0.0, 1));
-        pointSet.add(new Coordinate(0.0, 2));
-        pointSet.add(new Coordinate(4.0, 3));
-        pointSet.add(new Coordinate(4.01, 4));
-        pointSet.add(new Coordinate(6.5, 5));
+        pointSet = new HashSet<Coordinate>();
+        pointSet.add(new Coordinate(0d, 1d));
+        pointSet.add(new Coordinate(0d, 2d));
+        pointSet.add(new Coordinate(4d, 3d));
+        pointSet.add(new Coordinate(4d, 4.01d));
+        pointSet.add(new Coordinate(2d, 3d));
     }
 
     private void clearCounterUrquhartGraph() {
@@ -61,7 +62,7 @@ public class DelaunayTriangulationTest {
         DTCreator = null;
     }
 
-    @Test
+    @Test@Ignore
     public void BuildSimpleTriangle() {
         initSimpleTriangle();
         initDTCreator();
@@ -76,7 +77,7 @@ public class DelaunayTriangulationTest {
         clearDTCreator();
     }
 
-    @Test
+    @Test@Ignore
     public void BuildSimpleTwoTriangles() {
         initSimpleTwoTriangles();
         initDTCreator();
@@ -98,7 +99,7 @@ public class DelaunayTriangulationTest {
         initCounterUrquhartGraph();
         initDTCreator();
 
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(simpleTwoTriangles);
+        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
         for (Line edge : DelaunayEdges) {
             System.out.println(edge);
         }
