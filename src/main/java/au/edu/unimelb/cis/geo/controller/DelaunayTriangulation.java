@@ -12,6 +12,7 @@ import static au.edu.unimelb.cis.geo.model.util.isPointClockwiseFromLine;
 public class DelaunayTriangulation {
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
     private HashMap<Integer, Triangle> triangleSet = new HashMap<Integer, Triangle>();
+    private boolean debug = true;
 
     public ArrayList<Line> createDelaunayTriangulation(Set<Coordinate> pointSet) {
 
@@ -44,19 +45,23 @@ public class DelaunayTriangulation {
 
         //S-hull algorithm [http://www.s-hull.org/paper/s_hull.pdf]
 
-        //1. sort point
+        //1. sort points
         Collections.sort(DelaunayPoints);
         //2. select a x_o point randomly from x_i
         Coordinate x_o = DelaunayPoints.get(0);
         //3. find the point x_j closest to x_0
         Coordinate x_j = DelaunayPoints.get(1);
+
+        //remove x_o and x_j from further processing
+        DelaunayPoints.remove(0);
+        DelaunayPoints.remove(1);
+
         //4. find the point x_k that creates the smallest circumCircle
         // with x_0 and x_j and record the center of the circum-circle C
         int i_x_k = 0;
         double minCircumRadius = Double.MAX_VALUE;
         Triangle triangle;
         Coordinate[] vertices = new Coordinate[3];
-        for (int i = 2; i < DelaunayPoints.size(); i++) {
             vertices[0] = x_o;
             vertices[1] = x_j;
             vertices[2] = DelaunayPoints.get(i);
@@ -65,12 +70,18 @@ public class DelaunayTriangulation {
 
             triangle.SetCircumRadius();
             double radius = triangle.getCircumRadius();
+//            System.out.println("INFO: " + i + "^th radius = " + radius);
             if (radius < minCircumRadius) {
+//                System.out.println("INFO: MIN found at " + i + "^th radius = " + radius);
                 minCircumRadius = radius;
                 i_x_k = i;
             }
         }
         Coordinate x_k = DelaunayPoints.get(i_x_k);
+
+        //remove x_k from further processing
+        DelaunayPoints.remove(i_x_k);
+
         //5. order point x_0, x_j, x_k to give a right handed (clockwise) system this is the initial x_o convex hull
         //create line in the order x_0, x_j and check x_k is clockwise or not relative to line
         Line line = new Line(x_o, x_j);
@@ -92,7 +103,23 @@ public class DelaunayTriangulation {
         vertices[1] = x_j;
         vertices[2] = x_k;
         triangle = new Triangle(vertices);
-        addTriangle(triangle);
+        //Add the first triangle
+        Line edge1 = getFromLineSet(x_o, x_j);
+        Line edge2 = getFromLineSet(x_j, x_k);
+        Line edge3 = getFromLineSet(x_k, x_o);
+
+        triangle.setIndex(triangleSet.size());
+        edge1.addNeighbour(triangle.getIndex());
+        edge2.addNeighbour(triangle.getIndex());
+        edge3.addNeighbour(triangle.getIndex());
+
+        triangle.setEdges(new Line[]{edge1, edge2, edge3});
+        triangleSet.put(triangleSet.size(), triangle);
+        //First triangle addition finished
+        if (debug == true) {
+            DelaunayEdges.addAll(edgeSet.values());
+            return DelaunayEdges;
+        }
 
         //8. re-sort the remaining points with respect to the circumcenter of the first triangle,
         // to give points s_i
@@ -105,7 +132,6 @@ public class DelaunayTriangulation {
         //9. sequentially add the points s_i to the propagating 2D convex hull
         // that is seeded with the triangle formed from x_0, x_j, x_k
         // as a new point is added the facets of the 2D-hull that are visible to it form new triangles
-        int id = 3;
         int resetID = 0; // To store the convex hull position to be replaced
         for (Coordinate point : DelaunayPoints) {
             ArrayList<Integer> postProcessIds = new ArrayList<Integer>();
@@ -145,8 +171,9 @@ public class DelaunayTriangulation {
                 Collections.sort(postProcessIds);
                 int key = -1;
                 for (int i = postProcessIds.size() -1; i >= 0; i--) {
-                    if (postProcessIds.get(i) >= resetID)
+                    if (postProcessIds.get(i) >= resetID) {
                         convexHull.remove(postProcessIds.get(i) + 1);
+                    }
                     else {
                         //Could not use key extracted from postProcessIds as is
                         //had to assign it to new variable before using
@@ -159,6 +186,10 @@ public class DelaunayTriangulation {
         }
         //INFO: By this point a non-overlapping(planar) triangulation of the set of points is created
         System.out.println("# of triangles = " + triangleSet.size());
+        if (debug == true) {
+            DelaunayEdges.addAll(edgeSet.values());
+            return DelaunayEdges;
+        }
 
         if (triangleSet.size() == 1) { //If there is only one triangle
             DelaunayEdges.addAll(edgeSet.values());
@@ -259,15 +290,16 @@ public class DelaunayTriangulation {
         for (int i = 0; i < 3; i++) {
             int j = (i == 2) ? 0 : i + 1;
             Line line = getFromLineSet(triangle.getVertices()[i], triangle.getVertices()[j]);
-            if (line.getNumOfNeighbours() == 2) {
+            if (line.getNumOfNeighbours() == 1) {
+                triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
+            } else {
                 continue;
             }
-            triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
             line.addNeighbour(triangle.getIndex());
             edges[i] = line;
         }
-            triangle.setEdges(edges);
-            triangleSet.put(triangleSet.size(), triangle);
+        triangle.setEdges(edges);
+        triangleSet.put(triangleSet.size(), triangle);
     }
 
     /**
