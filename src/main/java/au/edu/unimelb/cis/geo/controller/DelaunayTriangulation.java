@@ -62,6 +62,7 @@ public class DelaunayTriangulation {
         double minCircumRadius = Double.MAX_VALUE;
         Triangle triangle;
         Coordinate[] vertices = new Coordinate[3];
+        for (int i = 0; i < DelaunayPoints.size(); i++) {
             vertices[0] = x_o;
             vertices[1] = x_j;
             vertices[2] = DelaunayPoints.get(i);
