@@ -13,6 +13,7 @@ public class DelaunayTriangulation {
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
     private HashMap<Integer, Triangle> triangleSet = new HashMap<Integer, Triangle>();
     private boolean debug = true;
+    private boolean debug = false;
 
     public ArrayList<Line> createDelaunayTriangulation(Set<Coordinate> pointSet) {
 
@@ -55,6 +56,18 @@ public class DelaunayTriangulation {
         //remove x_o and x_j from further processing
         DelaunayPoints.remove(0);
         DelaunayPoints.remove(1);
+
+        //debug code segment start
+        System.out.println("# of points for Delaunay graph = " + DelaunayPoints.size());
+        Line edgeA = getFromLineSet(x_o, x_j);
+        Line edgeB = getFromLineSet(x_j, DelaunayPoints.get(0)); //new Coordinate(-88.0326790301839, 44.5677257181882)
+        Line edgeC = getFromLineSet(DelaunayPoints.get(0), x_o);
+
+        if (debug == true) {
+            DelaunayEdges.addAll(edgeSet.values());
+            return DelaunayEdges;
+        }
+        //debug code segment end
 
         //4. find the point x_k that creates the smallest circumCircle
         // with x_0 and x_j and record the center of the circum-circle C
