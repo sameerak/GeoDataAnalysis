@@ -12,11 +12,11 @@ import static au.edu.unimelb.cis.geo.model.util.isPointClockwiseFromLine;
 public class DelaunayTriangulation {
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
     private HashMap<Integer, Triangle> triangleSet = new HashMap<Integer, Triangle>();
-    private boolean debug = true;
     private boolean debug = false;
 
     public ArrayList<Line> createDelaunayTriangulation(Set<Coordinate> pointSet) {
 
+        System.out.println("# pointSet size= " + pointSet.size());
         //validate the point set
 
         //remove overlapping points
@@ -25,13 +25,15 @@ public class DelaunayTriangulation {
 
         for (Coordinate point : pointSet) {
             if (!locationsMap.containsKey(point)) {
-                DelaunayPoints.add(point);
-                locationsMap.put(point, 0);
+                locationsMap.put(point, 1);
             } else {
                 int count = (int) locationsMap.get(point);
                 locationsMap.put(point, count++);
             }
         }
+
+        DelaunayPoints.addAll(locationsMap.keySet());
+        locationsMap = null; //saving space
 
         //log the number of points to create Delaunay triangulation on
         System.out.println("# of points for Delaunay graph = " + DelaunayPoints.size());
@@ -55,7 +57,7 @@ public class DelaunayTriangulation {
 
         //remove x_o and x_j from further processing
         DelaunayPoints.remove(0);
-        DelaunayPoints.remove(1);
+        DelaunayPoints.remove(0);
 
         //debug code segment start
         System.out.println("# of points for Delaunay graph = " + DelaunayPoints.size());
@@ -84,7 +86,7 @@ public class DelaunayTriangulation {
 
             triangle.SetCircumRadius();
             double radius = triangle.getCircumRadius();
-//            System.out.println("INFO: " + i + "^th radius = " + radius);
+//            System.out.println("INFO: Point" + i + "^th " + DelaunayPoints.get(i) + " radius = " + radius);
             if (radius < minCircumRadius) {
 //                System.out.println("INFO: MIN found at " + i + "^th radius = " + radius);
                 minCircumRadius = radius;
@@ -130,10 +132,13 @@ public class DelaunayTriangulation {
         triangle.setEdges(new Line[]{edge1, edge2, edge3});
         triangleSet.put(triangleSet.size(), triangle);
         //First triangle addition finished
+
+        //debug code segment start
         if (debug == true) {
             DelaunayEdges.addAll(edgeSet.values());
             return DelaunayEdges;
         }
+        //debug code segment end
 
         //8. re-sort the remaining points with respect to the circumcenter of the first triangle,
         // to give points s_i
@@ -200,10 +205,13 @@ public class DelaunayTriangulation {
         }
         //INFO: By this point a non-overlapping(planar) triangulation of the set of points is created
         System.out.println("# of triangles = " + triangleSet.size());
+
+        //debug code segment start
         if (debug == true) {
             DelaunayEdges.addAll(edgeSet.values());
             return DelaunayEdges;
         }
+        //debug code segment end
 
         if (triangleSet.size() == 1) { //If there is only one triangle
             DelaunayEdges.addAll(edgeSet.values());
