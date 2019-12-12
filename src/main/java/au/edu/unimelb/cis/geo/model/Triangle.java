@@ -68,7 +68,7 @@ public class Triangle {
                 dist1 = circumCenter.distance(vertices[1]),
                 dist2 = circumCenter.distance(vertices[2]);
 
-        //Assign the distance to furthest vertex as redius
+        //Assign the distance to furthest vertex as radius
         circumRadius = Math.max(dist2, Math.max(dist0, dist1));
     }
 
