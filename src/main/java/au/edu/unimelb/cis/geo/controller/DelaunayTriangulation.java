@@ -60,12 +60,12 @@ public class DelaunayTriangulation {
         DelaunayPoints.remove(0);
 
         //debug code segment start
-        System.out.println("# of points for Delaunay graph = " + DelaunayPoints.size());
-        Line edgeA = getFromLineSet(x_o, x_j);
-        Line edgeB = getFromLineSet(x_j, DelaunayPoints.get(0)); //new Coordinate(-88.0326790301839, 44.5677257181882)
-        Line edgeC = getFromLineSet(DelaunayPoints.get(0), x_o);
-
         if (debug == true) {
+            Line edgeA = getFromLineSet(x_o, x_j);
+            Line edgeB = getFromLineSet(x_j, DelaunayPoints.get(0));
+            Line edgeC = getFromLineSet(DelaunayPoints.get(0), x_o);
+
+            System.out.println("# of points for Delaunay graph after removing x_o and x_j = " + DelaunayPoints.size());
             DelaunayEdges.addAll(edgeSet.values());
             return DelaunayEdges;
         }
@@ -86,9 +86,9 @@ public class DelaunayTriangulation {
 
             triangle.SetCircumRadius();
             double radius = triangle.getCircumRadius();
-//            System.out.println("INFO: Point" + i + "^th " + DelaunayPoints.get(i) + " radius = " + radius);
+            System.out.println("INFO: Point" + i + "^th " + DelaunayPoints.get(i) + " radius = " + radius);
             if (radius < minCircumRadius) {
-//                System.out.println("INFO: MIN found at " + i + "^th radius = " + radius);
+                System.out.println("INFO: MIN found at " + i + "^th radius = " + radius);
                 minCircumRadius = radius;
                 i_x_k = i;
             }
@@ -115,7 +115,7 @@ public class DelaunayTriangulation {
         convexHull.add(x_k);
 
         //7. add initial 3 edges to Delaunay Triangulation;
-        vertices[0] = x_o;
+         vertices[0] = x_o;
         vertices[1] = x_j;
         vertices[2] = x_k;
         triangle = new Triangle(vertices);
