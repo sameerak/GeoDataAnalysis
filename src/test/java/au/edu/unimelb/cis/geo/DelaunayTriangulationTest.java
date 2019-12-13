@@ -128,9 +128,6 @@ public class DelaunayTriangulationTest {
         initDTCreator();
 
         ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
-        for (Line edge : DelaunayEdges) {
-            System.out.println(edge);
-        }
         assertEquals(6, DelaunayEdges.size());
 
         clearTetrahedron();
@@ -157,9 +154,6 @@ public class DelaunayTriangulationTest {
         initDTCreator();
 
         ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
-        for (Line edge : DelaunayEdges) {
-            System.out.println(edge);
-        }
         assertEquals(8, DelaunayEdges.size());
 
         clearIrregularPyramid();
@@ -193,9 +187,9 @@ public class DelaunayTriangulationTest {
         initDTCreator();
 
         ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
-        for (Line edge : DelaunayEdges) {
-            System.out.println(edge);
-        }
+//        for (Line edge : DelaunayEdges) {
+//            System.out.println(edge);
+//        }
         assertEquals(13, DelaunayEdges.size());
 
         clearPyramidAndTetrahedron();

@@ -15,8 +15,7 @@ public class DelaunayTriangulation {
     private boolean debug = false;
 
     public ArrayList<Line> createDelaunayTriangulation(Set<Coordinate> pointSet) {
-
-        System.out.println("# pointSet size= " + pointSet.size());
+//        System.out.println("INFO: pointSet size= " + pointSet.size());
         //validate the point set
 
         //remove overlapping points
@@ -36,11 +35,11 @@ public class DelaunayTriangulation {
         locationsMap = null; //saving space
 
         //log the number of points to create Delaunay triangulation on
-        System.out.println("# of points for Delaunay graph = " + DelaunayPoints.size());
+//        System.out.println("INFO: # of points for Delaunay graph = " + DelaunayPoints.size());
 
         //validate number of points
         if (DelaunayPoints.size() < 3) {
-            return null; //TODO throw exception: not enough points
+            return null; //not enough points
         }
 
         //data structure to hold the edges of the Delaunay triangulation
@@ -59,18 +58,6 @@ public class DelaunayTriangulation {
         DelaunayPoints.remove(0);
         DelaunayPoints.remove(0);
 
-        //debug code segment start
-        if (debug == true) {
-            Line edgeA = getFromLineSet(x_o, x_j);
-            Line edgeB = getFromLineSet(x_j, DelaunayPoints.get(0));
-            Line edgeC = getFromLineSet(DelaunayPoints.get(0), x_o);
-
-            System.out.println("# of points for Delaunay graph after removing x_o and x_j = " + DelaunayPoints.size());
-            DelaunayEdges.addAll(edgeSet.values());
-            return DelaunayEdges;
-        }
-        //debug code segment end
-
         //4. find the point x_k that creates the smallest circumCircle
         // with x_0 and x_j and record the center of the circum-circle C
         int i_x_k = 0;
@@ -86,9 +73,9 @@ public class DelaunayTriangulation {
 
             triangle.SetCircumRadius();
             double radius = triangle.getCircumRadius();
-            System.out.println("INFO: Point" + i + "^th " + DelaunayPoints.get(i) + " radius = " + radius);
+//            System.out.println("DEBUG: Point" + i + "^th " + DelaunayPoints.get(i) + " radius = " + radius);
             if (radius < minCircumRadius) {
-                System.out.println("INFO: MIN found at " + i + "^th radius = " + radius);
+//                System.out.println("DEBUG: MIN found at " + i + "^th radius = " + radius);
                 minCircumRadius = radius;
                 i_x_k = i;
             }
@@ -132,13 +119,6 @@ public class DelaunayTriangulation {
         triangle.setEdges(new Line[]{edge1, edge2, edge3});
         triangleSet.put(triangleSet.size(), triangle);
         //First triangle addition finished
-
-        //debug code segment start
-        if (debug == true) {
-            DelaunayEdges.addAll(edgeSet.values());
-            return DelaunayEdges;
-        }
-        //debug code segment end
 
         //8. re-sort the remaining points with respect to the circumcenter of the first triangle,
         // to give points s_i
@@ -204,14 +184,7 @@ public class DelaunayTriangulation {
             }
         }
         //INFO: By this point a non-overlapping(planar) triangulation of the set of points is created
-        System.out.println("# of triangles = " + triangleSet.size());
-
-        //debug code segment start
-        if (debug == true) {
-            DelaunayEdges.addAll(edgeSet.values());
-            return DelaunayEdges;
-        }
-        //debug code segment end
+//        System.out.println("INFO: # of triangles = " + triangleSet.size());
 
         if (triangleSet.size() == 1) { //If there is only one triangle
             DelaunayEdges.addAll(edgeSet.values());
@@ -245,11 +218,11 @@ public class DelaunayTriangulation {
                 }
             }
             ++iteration;
-            System.out.println("iteration no = " + iteration);
+//            System.out.println("DEBUG: check and flip iteration no = " + iteration);
         }
 
         //INFO: Delaunay triangulation is created by this point.
-        System.out.println("# of edges for Delaunay triangulation = " + edgeSet.size());
+//        System.out.println("INFO: # of edges for Delaunay triangulation = " + edgeSet.size());
 
         DelaunayEdges.addAll(edgeSet.values());
         return DelaunayEdges; //return resulting triangulation
