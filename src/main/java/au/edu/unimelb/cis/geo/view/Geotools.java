@@ -1,11 +1,17 @@
 package au.edu.unimelb.cis.geo.view;
 
+import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
+import au.edu.unimelb.cis.geo.model.Line;
+import au.edu.unimelb.cis.geo.view.button.PlotExperimentPoints;
+import au.edu.unimelb.cis.geo.view.button.PlotLakeMichigan;
 import au.edu.unimelb.cis.geo.view.util.DatePanel;
+import org.geotools.data.DataUtilities;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -37,6 +43,8 @@ import java.util.Set;
 
 import static au.edu.unimelb.cis.geo.model.Resources.Lake_Michigan;
 import static au.edu.unimelb.cis.geo.model.Resources.WorldMapFile;
+import static au.edu.unimelb.cis.geo.view.util.UIUtils.createGeneralPointStyle;
+import static au.edu.unimelb.cis.geo.view.util.UIUtils.getLineFeature;
 
 /**
  * References
@@ -53,6 +61,7 @@ public class Geotools {
     private static MapContent map;
     private static Layer pointLayer = null;
     private static Layer trajectoryLayer = null;
+    private static Layer DelaunayTriangulation = null;
     private static ArrayList<Layer> clusterLayers = null;
     private static JMapFrame mapFrame;
 
@@ -86,115 +95,11 @@ public class Geotools {
 //        toolBar.add(datePanel);
 
         JPanel customPanel = new JPanel();
-        customPanel.add(new JButton(new PlotLakeMichigan()));
+        customPanel.add(new JButton(new PlotLakeMichigan(map)));
+        customPanel.add(new JButton(new PlotExperimentPoints(map)));
         toolBar.add(customPanel);
 
         mapFrame.setSize(900, 600);
         mapFrame.setVisible(true);
-    }
-
-    public static void clearLayers() {
-        if (pointLayer != null) {
-            map.removeLayer(pointLayer);
-            pointLayer = null;
-        }
-        if (trajectoryLayer != null) {
-            map.removeLayer(trajectoryLayer);
-            trajectoryLayer = null;
-        }
-    }
-
-    static class PlotLakeMichigan extends SafeAction {
-
-        PlotLakeMichigan() {
-            super("LakeMichigan");
-            putValue(Action.SHORT_DESCRIPTION, "Plot boundary points of Michigan Lake");
-        }
-
-        private Set<Coordinate> getLakeMichiganPointSet() {
-            Set<Coordinate> pointSet = new HashSet<Coordinate>();
-            int i = 0, j = 0;
-
-            String[] lat_long_pairs = Lake_Michigan.split(",");
-
-            for (String coordinate : lat_long_pairs) {
-                String[] lat_long_pair = coordinate.split(" ");
-                pointSet.add(new Coordinate(Double.parseDouble(lat_long_pair[0]), Double.parseDouble(lat_long_pair[1]),
-                        0));
-                ++i;
-            }
-            return pointSet;
-        }
-
-        public void action(ActionEvent e) throws Throwable {
-            clearLayers();
-
-            SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
-            b.setName("PlotUserDataFeatureType");
-            b.setCRS(DefaultGeographicCRS.WGS84);
-            b.add("location", Point.class);
-            b.add("D-Value", Double.class);
-            b.add("color", String.class);
-            b.add("size", Integer.class);
-            // building the type
-            final SimpleFeatureType TYPE = b.buildFeatureType();
-            SimpleFeatureBuilder featureBuilder;
-            GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-            DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", TYPE);
-
-            Set<Coordinate> uniqueLocalities = getLakeMichiganPointSet();
-            for (Coordinate locality : uniqueLocalities) {
-                Point point = geometryFactory.createPoint(locality);
-                featureBuilder = new SimpleFeatureBuilder(TYPE);
-                featureBuilder.add(point);
-                featureBuilder.add("N/A");
-                featureBuilder.add(Color.darkGray);
-                featureBuilder.add(5);
-                SimpleFeature feature = featureBuilder.buildFeature(locality.toString());
-                featureCollection.add(feature);
-            }
-
-            Style style = createGeneralPointStyle();
-            pointLayer = new FeatureLayer(featureCollection, style);
-            map.addLayer(pointLayer);
-        }
-    }
-
-    /**
-     * Create a Style to draw point features
-     */
-    private static Style createGeneralPointStyle() {
-        StyleFactory styleFactory = CommonFactoryFinder.getStyleFactory();
-        FilterFactory filterFactory = CommonFactoryFinder.getFilterFactory();
-        Graphic gr = styleFactory.createDefaultGraphic();
-
-        Mark mark = styleFactory.getCircleMark();
-
-        mark.setStroke(styleFactory.createStroke(
-                filterFactory.literal(Color.BLACK), filterFactory.literal(1)));
-
-//            mark.setFill(styleFactory.createFill(filterFactory.literal(Color.MAGENTA)));
-        StyleBuilder sb = new StyleBuilder();
-        FilterFactory2 ff = sb.getFilterFactory();
-        mark.setFill(styleFactory.createFill(/*filterFactory.literal(Color.CYAN)*/
-                sb.attributeExpression("color")));
-
-        gr.graphicalSymbols().clear();
-        gr.graphicalSymbols().add(mark);
-        gr.setSize(ff.property("size"));
-
-        /*
-         * Setting the geometryPropertyName arg to null signals that we want to
-         * draw the default geomettry of features
-         */
-        PointSymbolizer sym = styleFactory.createPointSymbolizer(gr, null);
-
-        Rule rule = styleFactory.createRule();
-        rule.symbolizers().add(sym);
-        FeatureTypeStyle fts = styleFactory.createFeatureTypeStyle(new Rule[]{rule});
-        Style style = styleFactory.createStyle();
-        style.featureTypeStyles().add(fts);
-
-        return style;
     }
 }

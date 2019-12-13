@@ -3,13 +3,14 @@ package au.edu.unimelb.cis.geo.model;
 import org.locationtech.jts.geom.Coordinate;
 
 public class Triangle {
+    private int index;
     private Coordinate[] vertices;//these should form a clockwise rotation
     private Line[] edges; //if edges exist, contains 3 edges in order 0-1,1-2,2-0
     private Coordinate circumCenter;
     private double circumRadius = Double.MAX_VALUE;
 
     private int numOfAdjacentTriangles = 0;
-    private String[] adjacentTriangleIDs = new String[3];
+    private int[] adjacentTriangleIndexes = new int[3];
 
     public Triangle(Coordinate[] vertices) {
         this.vertices = vertices;
@@ -19,12 +20,8 @@ public class Triangle {
         return vertices;
     }
 
-    public String getID() {
-        return vertices[0] + "," + vertices[1] + "," + vertices[2];
-    }
-
-    public void addNeighbour(String neighbourID) {
-        adjacentTriangleIDs[numOfAdjacentTriangles] = neighbourID;
+    public void addNeighbour(int neighbourID) {
+        adjacentTriangleIndexes[numOfAdjacentTriangles] = neighbourID;
         ++numOfAdjacentTriangles;
     }
 
@@ -71,7 +68,7 @@ public class Triangle {
                 dist1 = circumCenter.distance(vertices[1]),
                 dist2 = circumCenter.distance(vertices[2]);
 
-        //Assign the distance to furthest vertex as redius
+        //Assign the distance to furthest vertex as radius
         circumRadius = Math.max(dist2, Math.max(dist0, dist1));
     }
 
@@ -84,5 +81,13 @@ public class Triangle {
                     " ^ " + edges[2];
         }
         return out;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 }
