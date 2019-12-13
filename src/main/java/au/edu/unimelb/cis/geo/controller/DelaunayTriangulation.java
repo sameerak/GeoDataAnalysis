@@ -312,13 +312,13 @@ public class DelaunayTriangulation {
         for (int i = 0; i < 3; i++) {
             int j = (i == 2) ? 0 : i + 1;
             Line line = getFromLineSet(triangle.getVertices()[i], triangle.getVertices()[j]);
+            line.addNeighbour(triangle.getIndex());
             if (line.getNumOfNeighbours() == 1) {
                 triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
+                edges[i] = line;
             } else {
                 continue;
             }
-            line.addNeighbour(triangle.getIndex());
-            edges[i] = line;
         }
         triangle.setEdges(edges);
         triangleSet.put(triangleSet.size(), triangle);
@@ -417,7 +417,8 @@ public class DelaunayTriangulation {
         }
 
         //if the given triangles fail determinant test
-        if (isDInsideABC(triangleA, triangle2[D_index])) {
+        if (isDInsideABC(new Triangle(triangle1), triangle2[D_index])) {
+//            System.out.println("INFO: point D(" + triangle2[D_index] + ") is inside the circumcircle of triangle 1.");
             //flip given two triangles
             //ABC and BDC -> ABD and ADC
             //edge changes
@@ -502,7 +503,7 @@ public class DelaunayTriangulation {
      * @param d
      * @return True if and only if D lies inside the circumCircle ABC
      */
-    public static boolean isDInsideABC(Triangle abc, Coordinate d) {
+    private boolean isDInsideABC(Triangle abc, Coordinate d) {
         abc.SetCircumRadius();
 
         double D_length = d.distance(abc.getCircumcenter());
