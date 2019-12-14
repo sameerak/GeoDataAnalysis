@@ -2,6 +2,7 @@ package au.edu.unimelb.cis.geo.view.button;
 
 
 import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
+import au.edu.unimelb.cis.geo.controller.GabrielGraph;
 import au.edu.unimelb.cis.geo.model.Line;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -33,7 +34,8 @@ import static au.edu.unimelb.cis.geo.view.util.UIUtils.getLineFeature;
 public class PlotExperimentPoints extends SafeAction {
     private MapContent map;
     private Layer pointLayer;
-    private Layer DelaunayTriangulation;
+    private Layer DelaunayTriangulationLayer;
+    private Layer gabrielGraphLayer;
 
     public PlotExperimentPoints(MapContent map) {
         super("ExperimentPoints");
@@ -45,8 +47,11 @@ public class PlotExperimentPoints extends SafeAction {
         if (pointLayer != null) {
             map.removeLayer(pointLayer);
         }
-        if (DelaunayTriangulation != null) {
-            map.removeLayer(DelaunayTriangulation);
+        if (DelaunayTriangulationLayer != null) {
+            map.removeLayer(DelaunayTriangulationLayer);
+        }
+        if (gabrielGraphLayer != null) {
+            map.removeLayer(gabrielGraphLayer);
         }
     }
 
@@ -110,7 +115,19 @@ public class PlotExperimentPoints extends SafeAction {
         }
 
         Style lineStyle = SLD.createLineStyle(Color.red, 0.1F);
-        DelaunayTriangulation = new FeatureLayer(lineCollection, lineStyle);
-        map.addLayer(DelaunayTriangulation);
+        DelaunayTriangulationLayer = new FeatureLayer(lineCollection, lineStyle);
+        map.addLayer(DelaunayTriangulationLayer);
+
+        DefaultFeatureCollection gabrielLineCollection = new DefaultFeatureCollection();
+        GabrielGraph gabrielGraph = new GabrielGraph(DTCreator);
+        ArrayList<Line> gabrielEdges = gabrielGraph.getEdgeList();
+
+        for (int i = 0; i < gabrielEdges.size(); i++) {
+            gabrielLineCollection.add(getLineFeature(gabrielEdges.get(i).getEndPoints()));
+        }
+
+        Style gabrielLineStyle = SLD.createLineStyle(Color.blue, 0.1F);
+        gabrielGraphLayer = new FeatureLayer(gabrielLineCollection, gabrielLineStyle);
+        map.addLayer(gabrielGraphLayer);
     }
 }
