@@ -10,9 +10,9 @@ import java.util.*;
 import static au.edu.unimelb.cis.geo.model.util.isPointClockwiseFromLine;
 
 public class DelaunayTriangulation {
+    private ArrayList<Coordinate> DelaunayPoints = new ArrayList<Coordinate>();
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
     private HashMap<Integer, Triangle> triangleSet = new HashMap<Integer, Triangle>();
-    private boolean debug = false;
 
     public ArrayList<Line> createDelaunayTriangulation(Set<Coordinate> pointSet) {
 //        System.out.println("INFO: pointSet size= " + pointSet.size());
@@ -20,7 +20,6 @@ public class DelaunayTriangulation {
 
         //remove overlapping points
         HashMap locationsMap = new HashMap<Coordinate, Integer>();
-        ArrayList<Coordinate> DelaunayPoints = new ArrayList<Coordinate>();
 
         for (Coordinate point : pointSet) {
             if (!locationsMap.containsKey(point)) {
@@ -486,5 +485,13 @@ public class DelaunayTriangulation {
         }
 
         return false;
+    }
+
+    public HashMap<String, Line> getEdgeSet() {
+        return edgeSet;
+    }
+
+    public HashMap<Integer, Triangle> getTriangleSet() {
+        return triangleSet;
     }
 }
