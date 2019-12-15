@@ -32,6 +32,7 @@ public class SteppingStoneGraph {
             for (int i = 0; i < 2; i++) {
                     walkRelativeNeighborhood(DTEdge, i, minDs);
             }
+            System.out.println("Edge" + DTEdge + "minDs = [" + minDs[0] + " ," + minDs[1] + "]");
 
             DTEdge.setD_value(minDs[0] < minDs[1] ? minDs[0] : minDs[1]);
         }
@@ -45,11 +46,15 @@ public class SteppingStoneGraph {
         if (MaskingTriangleID != -1) {
             MaskingTriangle = delaunayTriangleSet.get(MaskingTriangleID);
             Zmax = null;
-            getMaskingVertex(DE, i, minDs);
+            MaskingVertex = getMaskingVertex(DE, i, minDs);
             Zmax = getZmax(DE, i, minDs); //set edge of relative neighborhood on masking vertex side
         } else {
             return;
         }
+
+//        if (MaskingVertex.distance(DE.getCenterPoint()) > Zmax.distance(DE.getCenterPoint())){
+//            return;
+//        }
 
         int totTrianglesChecked = 0;
         while (MaskingTriangleID != -1) {
@@ -88,6 +93,8 @@ public class SteppingStoneGraph {
                     minDs[i] = newD;
                     Zmax = getZmax(DE, i, minDs);
                 }
+            } else {
+                break;
             }
 
             if (nextMaskingEdge == null) {
