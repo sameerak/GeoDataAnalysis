@@ -3,6 +3,7 @@ package au.edu.unimelb.cis.geo.view.button;
 
 import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
 import au.edu.unimelb.cis.geo.controller.GabrielGraph;
+import au.edu.unimelb.cis.geo.controller.SteppingStoneGraph;
 import au.edu.unimelb.cis.geo.model.Line;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -36,6 +37,7 @@ public class PlotExperimentPoints extends SafeAction {
     private Layer pointLayer;
     private Layer DelaunayTriangulationLayer;
     private Layer gabrielGraphLayer;
+    private Layer steppingStoneGraphLayer;
 
     public PlotExperimentPoints(MapContent map) {
         super("ExperimentPoints");
@@ -129,5 +131,17 @@ public class PlotExperimentPoints extends SafeAction {
         Style gabrielLineStyle = SLD.createLineStyle(Color.blue, 0.1F);
         gabrielGraphLayer = new FeatureLayer(gabrielLineCollection, gabrielLineStyle);
         map.addLayer(gabrielGraphLayer);
+
+        DefaultFeatureCollection SSGLineCollection = new DefaultFeatureCollection();
+        SteppingStoneGraph steppingStoneGraph = new SteppingStoneGraph(DTCreator);
+        ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(4);
+
+        for (int i = 0; i < steppingStoneGraphEdges.size(); i++) {
+            SSGLineCollection.add(getLineFeature(steppingStoneGraphEdges.get(i).getEndPoints()));
+        }
+
+        Style SSGLineStyle = SLD.createLineStyle(Color.green, 0.1F);
+        steppingStoneGraphLayer = new FeatureLayer(SSGLineCollection, SSGLineStyle);
+        map.addLayer(steppingStoneGraphLayer);
     }
 }
