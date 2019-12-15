@@ -10,7 +10,7 @@ import java.util.HashMap;
 import static au.edu.unimelb.cis.geo.model.util.*;
 
 public class SteppingStoneGraph {
-    private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
+    private HashMap<String, Line> edgeSet;
     private DelaunayTriangulation delaunayTriangulation;
     private Coordinate Zmax, MaskingVertex;
     private Line MaskingEdge, nextMaskingEdge;
@@ -23,7 +23,6 @@ public class SteppingStoneGraph {
     }
 
     private void CreateD_Spectrum() {
-        int r = 0;
         double[] minDs;
         for (String delaunayEdgeKey :edgeSet.keySet()) {
             Line DTEdge = edgeSet.get(delaunayEdgeKey);
@@ -32,9 +31,9 @@ public class SteppingStoneGraph {
             for (int i = 0; i < 2; i++) {
                     walkRelativeNeighborhood(DTEdge, i, minDs);
             }
-            System.out.println("Edge" + DTEdge + "minDs = [" + minDs[0] + " ," + minDs[1] + "]");
+//            System.out.println("INFO: Edge" + DTEdge + "minDs = [" + minDs[0] + " ," + minDs[1] + "]");
 
-            DTEdge.setD_value(minDs[0] < minDs[1] ? minDs[0] : minDs[1]);
+            DTEdge.setD_value(Math.min(minDs[0], minDs[1]));
         }
     }
 
@@ -62,19 +61,21 @@ public class SteppingStoneGraph {
             MaskingTriangle = delaunayTriangleSet.get(MaskingTriangleID);
             MaskingVertex = getMaskingVertex(DE, i, minDs);
 
+            MaskingTriangle.SetCircumRadius();
+            if (isZmaxWithinCircumcircleOfMaskingTriangle()) {
+                break;
+            }
+            //else run rest of the code
+
             double length0 = MaskingVertex.distance(DE.getEndPoints()[0]);
             double length1 = MaskingVertex.distance(DE.getEndPoints()[1]);
             double DELength = DE.getLength();
-            double minLength = Double.MAX_VALUE;
+            double minLength;
 
             //if one of edge lengths < 1, then find minimum length edge
             //and divide edge lengths with minLength
             if (DELength < 1 || length0 < 1 || length1 < 1) {
-                if (length0 < length1) {
-                    minLength = length0;
-                } else {
-                    minLength = length1;
-                }
+                minLength = Math.min(length0, length1);
                 if (DELength < minLength) {
                     minLength = DELength;
                 }
@@ -88,13 +89,11 @@ public class SteppingStoneGraph {
                     (minDs[i] != Double.POSITIVE_INFINITY &&
                             Math.pow(length0, minDs[i]) + Math.pow(length1, minDs[i])
                                     <= Math.pow(DELength, minDs[i]))) {
-                Double newD = solveForDSecant(DELength, length0, length1);
+                double newD = solveForDSecant(DELength, length0, length1);
                 if (newD < minDs[i]) {
                     minDs[i] = newD;
                     Zmax = getZmax(DE, i, minDs);
                 }
-            } else {
-                break;
             }
 
             if (nextMaskingEdge == null) {
@@ -110,6 +109,11 @@ public class SteppingStoneGraph {
                 MaskingTriangleID = MaskingEdge.getAdjacentNeighbours()[1];
             }
         }
+    }
+
+
+    private boolean isZmaxWithinCircumcircleOfMaskingTriangle() {
+        return MaskingTriangle.getCircumcenter().distance(Zmax) <= MaskingTriangle.getCircumRadius();
     }
 
     private Coordinate getZmax(Line DE, int i, double[] minDs) {

@@ -106,6 +106,110 @@ public class SteppingStoneGraphTest {
         clearDTCreator();
     }
 
+    private void initTetrahedron() {
+        pointSet = new HashSet<Coordinate>();
+        pointSet.add(new Coordinate(1d, 1.5d));
+        pointSet.add(new Coordinate(2d, 4d));
+        pointSet.add(new Coordinate(2.5d, 2.5d));
+        pointSet.add(new Coordinate(4.5d, 2d));
+    }
+
+    private void clearTetrahedron() {
+        pointSet = null;
+    }
+
+    @Test
+    @Ignore //This point set is included in PyramidAndTetrahedron
+    public void TestTetrahedron() {
+        initTetrahedron();
+        initDTCreator();
+        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initGabrielGraph();
+        initSteppingStoneGraph();
+
+        ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(2);
+        //Both == 3
+        assertEquals(gabrielGraph.getEdgeList().size(), steppingStoneGraphEdges.size());
+
+        clearTetrahedron();
+        clearGabrielGraph();
+        clearSteppingStoneGraph();
+        clearDTCreator();
+    }
+
+    private void initIrregularPyramid() {
+        pointSet = new HashSet<Coordinate>();
+        pointSet.add(new Coordinate(1d, 0.5d));
+        pointSet.add(new Coordinate(1d, 1.5d));
+        pointSet.add(new Coordinate(1.8d, 1d));
+        pointSet.add(new Coordinate(3d, 0.5d));
+        pointSet.add(new Coordinate(4.5d, 2d));
+    }
+
+    private void clearIrregularPyramid() {
+        pointSet = null;
+    }
+
+    @Test
+    @Ignore //This point set is included in PyramidAndTetrahedron
+    public void TestIrregularPyramid() {
+        initIrregularPyramid();
+        initDTCreator();
+        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initGabrielGraph();
+        initSteppingStoneGraph();
+
+        ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(2);
+        //Both == 5
+        assertEquals(gabrielGraph.getEdgeList().size(), steppingStoneGraphEdges.size());
+
+        clearIrregularPyramid();
+        clearGabrielGraph();
+        clearSteppingStoneGraph();
+        clearDTCreator();
+    }
+
+    private void initPyramidAndTetrahedron() {
+        pointSet = new HashSet<Coordinate>();
+
+        //Tetrahedron points
+        pointSet.add(new Coordinate(1d, 1.5d));
+        pointSet.add(new Coordinate(2d, 4d));
+        pointSet.add(new Coordinate(2.5d, 2.5d));
+        pointSet.add(new Coordinate(4.5d, 2d));
+
+        //Pyramid points
+        pointSet.add(new Coordinate(1d, 0.5d));
+        pointSet.add(new Coordinate(1d, 1.5d));
+        pointSet.add(new Coordinate(1.8d, 1d));
+        pointSet.add(new Coordinate(3d, 0.5d));
+        pointSet.add(new Coordinate(4.5d, 2d));
+    }
+
+    private void clearPyramidAndTetrahedron() {
+        pointSet = null;
+    }
+
+    @Test
+    public void TestPyramidAndTetrahedron() {
+        initPyramidAndTetrahedron();
+        initDTCreator();
+        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+//        for (Line edge : DelaunayEdges) {
+//            System.out.println(edge);
+//        }
+        initGabrielGraph();
+        initSteppingStoneGraph();
+
+        ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(2);
+        assertEquals(gabrielGraph.getEdgeList().size(), steppingStoneGraphEdges.size());
+
+        clearPyramidAndTetrahedron();
+        clearGabrielGraph();
+        clearSteppingStoneGraph();
+        clearDTCreator();
+    }
+
     private void initCounterUrquhartGraph() {
         pointSet = new HashSet<Coordinate>();
         pointSet.add(new Coordinate(0d, 0d));
@@ -120,21 +224,16 @@ public class SteppingStoneGraphTest {
     }
 
     @Test
-    @Ignore
     public void TestCounterUrquhartGraph() {
         initCounterUrquhartGraph();
         initDTCreator();
         ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
         initSteppingStoneGraph();
-        ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(2);
 
-//        for (Line edge : DelaunayEdges) {
-//            System.out.println(edge);
-//        }
-        assertEquals(7, steppingStoneGraphEdges.size());
+        ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(2);
+        assertEquals(5, steppingStoneGraphEdges.size());
 
         steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(Double.POSITIVE_INFINITY);
-
         assertEquals(4, steppingStoneGraphEdges.size());
 
         clearCounterUrquhartGraph();
