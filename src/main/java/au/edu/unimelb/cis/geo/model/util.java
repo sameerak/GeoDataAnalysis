@@ -90,7 +90,7 @@ public class util {
             oldfx = fx;
             ++iterations;
         }
-//        System.out.println("iterations = " + iterations);
+//        System.out.println("# of Secant iterations = " + iterations);
 //        fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
 //        System.out.println("fx = " + fx);
         return D;
