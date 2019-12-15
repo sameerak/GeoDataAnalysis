@@ -117,7 +117,7 @@ public class GabrielGraphTest {
 //        }
         assertEquals(3, gabrielGraph.getEdgeList().size());
 
-        clearPyramidAndTetrahedron();
+        clearTetrahedron();
         clearGabrielGraph();
         clearDTCreator();
     }
