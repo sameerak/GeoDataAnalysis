@@ -12,6 +12,7 @@ public class Line {
     private int[] neighbouringTriangleIDs = {-1, -1};
     private int numOfNeighbouringTriangles = 0;
     private int flipCount;
+    private double d_value;
 
     public Line(Coordinate point1, Coordinate point2){
         endPoints[0] = point1;
@@ -128,5 +129,17 @@ public class Line {
     @Override
     public String toString() {
         return endPoints[0] + " -> " + endPoints[1];
+    }
+
+    public double getD_value() {
+        return d_value;
+    }
+
+    public void setD_value(double d_value) {
+        this.d_value = d_value;
+    }
+
+    public Coordinate getCenterPoint() {
+        return euclideanCenterPoint;
     }
 }

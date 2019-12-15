@@ -234,7 +234,7 @@ public class DelaunayTriangulation {
      * @param point2
      * @return
      */
-    private Line getFromLineSet(Coordinate point1, Coordinate point2) {
+    public Line getFromLineSet(Coordinate point1, Coordinate point2) {
 
         /* Each line's ID is a combination of tweet ids from points
          * as the combination can depend on ordering of 2 ids this method checks both combinations */
