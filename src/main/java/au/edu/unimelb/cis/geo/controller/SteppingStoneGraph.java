@@ -7,8 +7,7 @@ import org.locationtech.jts.geom.Coordinate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static au.edu.unimelb.cis.geo.model.util.DoesSegmentsIntersect;
-import static au.edu.unimelb.cis.geo.model.util.isPointClockwiseFromLine;
+import static au.edu.unimelb.cis.geo.model.util.*;
 
 public class SteppingStoneGraph {
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
@@ -43,36 +42,23 @@ public class SteppingStoneGraph {
         int MaskingTriangleID = DE.getAdjacentNeighbours()[i];
         HashMap<Integer, Triangle> delaunayTriangleSet = delaunayTriangulation.getTriangleSet();
 
-        Coordinate Zmax;
         if (MaskingTriangleID != -1) {
             MaskingTriangle = delaunayTriangleSet.get(MaskingTriangleID);
             Zmax = null;
             getMaskingVertex(DE, i, minDs);
-//                Zmax = getZmax(DE, i); //set edge of relative neighborhood on masking vertex side
+            Zmax = getZmax(DE, i, minDs); //set edge of relative neighborhood on masking vertex side
         } else {
             return;
         }
 
-        int totTriangles = 0;
+        int totTrianglesChecked = 0;
         while (MaskingTriangleID != -1) {
-            ++totTriangles;
+            ++totTrianglesChecked;
             MaskingTriangle = delaunayTriangleSet.get(MaskingTriangleID);
-            MaskingTriangle.SetCircumRadius();
-            if (isZmaxWithinDCofMT()) {
-                break;
-            }
-            //else
-
             MaskingVertex = getMaskingVertex(DE, i, minDs);
 
-            double length0 = MaskingVertex.distance(
-                    DE.getEndPoints()[0]);
-//                            JTS.orthodromicDistance(MaskingVertex.getCoordinate(),
-//                            DE.getEndPoints()[0].getCoordinate(), sourceCRS) * 1000;
-            double length1 = MaskingVertex.distance(
-                    DE.getEndPoints()[1]);
-//                            JTS.orthodromicDistance(MaskingVertex.getCoordinate(),
-//                            DE.getEndPoints()[1].getCoordinate(), sourceCRS) * 1000;
+            double length0 = MaskingVertex.distance(DE.getEndPoints()[0]);
+            double length1 = MaskingVertex.distance(DE.getEndPoints()[1]);
             double DELength = DE.getLength();
             double minLength = Double.MAX_VALUE;
 
@@ -93,9 +79,7 @@ public class SteppingStoneGraph {
                 length1 = length1 / minLength;
             }
 
-            if((minDs[i] == Double.POSITIVE_INFINITY &&
-                    length0 < DELength &&
-                    length1 < DELength) ||
+            if((minDs[i] == Double.POSITIVE_INFINITY && length0 < DELength && length1 < DELength) ||
                     (minDs[i] != Double.POSITIVE_INFINITY &&
                             Math.pow(length0, minDs[i]) + Math.pow(length1, minDs[i])
                                     <= Math.pow(DELength, minDs[i]))) {
@@ -112,12 +96,6 @@ public class SteppingStoneGraph {
             //get new MaskingEdge of the MaskingTriangle
             MaskingEdge = nextMaskingEdge;
 
-//                        MaskingTriangle.getMaskingEdge(Zmax, DE.getEuclideanCenterPoint());
-//                if (MaskingEdge == null) { //Zmax is inside the triangle
-//                    break;
-//                }
-//                MaskingEdge = getFromLineSet(MaskingEdge.getEndPoints()[0],MaskingEdge.getEndPoints()[1]);
-
             //get new MaskingTriangleID from new MaskingEdge
             if (MaskingEdge.getAdjacentNeighbours()[1] == MaskingTriangleID) {
                 MaskingTriangleID = MaskingEdge.getAdjacentNeighbours()[0];
@@ -125,52 +103,6 @@ public class SteppingStoneGraph {
                 MaskingTriangleID = MaskingEdge.getAdjacentNeighbours()[1];
             }
         }
-    }
-
-    public static double solveForDSecant(double c, double a, double b) {
-        //throw exception if triangle inequality is not satisfied
-//        System.out.println(c + ", " + a + ", " + b);
-
-        double D = 2, tempD = 1, previousHighD = 10;
-        double fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D), oldfx;
-
-        if (fx == 0) {
-            return D;
-        }
-        //try finding upper bound for D-value
-        while (fx < 0) {
-            D *= 2;
-            if (Math.pow(c, D) == Double.POSITIVE_INFINITY)
-                return D;
-            fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
-        }
-
-        previousHighD = D + 1;
-        oldfx = Math.pow(c, previousHighD) - Math.pow(a, previousHighD) - Math.pow(b, previousHighD);
-
-        int iterations = 0;
-        while (/*(Math.abs(previousHighD - D) > 0.00001)*/
-                oldfx > (Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D)) &&
-                        (Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D)) > 100) {
-            fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
-//            System.out.println("fx = " + fx);
-
-            tempD = (D*oldfx - previousHighD*fx) / (oldfx - fx);
-            previousHighD = D;
-            D = tempD;
-            oldfx = fx;
-            ++iterations;
-        }
-//        System.out.println("iterations = " + iterations);
-//        fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
-//        System.out.println("fx = " + fx);
-        return D;
-    }
-
-    private boolean isZmaxWithinDCofMT() {
-        if (MaskingTriangle.getCircumcenter().distance(Zmax) <= MaskingTriangle.getCircumRadius())
-            return true;
-        return false;
     }
 
     private Coordinate getZmax(Line DE, int i, double[] minDs) {
@@ -217,9 +149,9 @@ public class SteppingStoneGraph {
         boolean e0Intersect = DoesSegmentsIntersect(vertex, e0, DE.getCenterPoint(), Zmax),
                 e1Intersect = DoesSegmentsIntersect(vertex, e1, DE.getCenterPoint(), Zmax);
 
-        if (e0Intersect && e1Intersect) {
+//        if (e0Intersect && e1Intersect) {
 //            System.out.println("INFO : Both edges of masking triangle intersect with Z max");
-        }
+//        }
 
         if (e0Intersect)
             nextMaskingEdge = delaunayTriangulation.getFromLineSet(vertex, e0);

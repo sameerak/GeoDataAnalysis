@@ -55,4 +55,44 @@ public class util {
 
         return false;
     }
+
+    public static double solveForDSecant(double c, double a, double b) {
+        //throw exception if triangle inequality is not satisfied
+//        System.out.println(c + ", " + a + ", " + b);
+
+        double D = 2, tempD = 1, previousHighD = 10;
+        double fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D), oldfx;
+
+        if (fx == 0) {
+            return D;
+        }
+        //try finding upper bound for D-value
+        while (fx < 0) {
+            D *= 2;
+            if (Math.pow(c, D) == Double.POSITIVE_INFINITY)
+                return D;
+            fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
+        }
+
+        previousHighD = D + 1;
+        oldfx = Math.pow(c, previousHighD) - Math.pow(a, previousHighD) - Math.pow(b, previousHighD);
+
+        int iterations = 0;
+        while (/*(Math.abs(previousHighD - D) > 0.00001)*/
+                oldfx > (Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D)) &&
+                        (Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D)) > 100) {
+            fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
+//            System.out.println("fx = " + fx);
+
+            tempD = (D*oldfx - previousHighD*fx) / (oldfx - fx);
+            previousHighD = D;
+            D = tempD;
+            oldfx = fx;
+            ++iterations;
+        }
+//        System.out.println("iterations = " + iterations);
+//        fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
+//        System.out.println("fx = " + fx);
+        return D;
+    }
 }
