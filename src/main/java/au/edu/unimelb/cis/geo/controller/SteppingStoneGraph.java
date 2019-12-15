@@ -65,49 +65,45 @@ public class SteppingStoneGraph {
 
             MaskingVertex = getMaskingVertex(DE, i, minDs);
 
-            try {
-                double length0 = MaskingVertex.distance(
-                        DE.getEndPoints()[0]);
+            double length0 = MaskingVertex.distance(
+                    DE.getEndPoints()[0]);
 //                            JTS.orthodromicDistance(MaskingVertex.getCoordinate(),
 //                            DE.getEndPoints()[0].getCoordinate(), sourceCRS) * 1000;
-                double length1 = MaskingVertex.distance(
-                        DE.getEndPoints()[1]);
+            double length1 = MaskingVertex.distance(
+                    DE.getEndPoints()[1]);
 //                            JTS.orthodromicDistance(MaskingVertex.getCoordinate(),
 //                            DE.getEndPoints()[1].getCoordinate(), sourceCRS) * 1000;
-                double DELength = DE.getLength();
-                double minLength = Double.MAX_VALUE;
+            double DELength = DE.getLength();
+            double minLength = Double.MAX_VALUE;
 
-                //if one of edge lengths < 1, then find minimum length edge
-                //and divide edge lengths with minLength
-                if (DELength < 1 || length0 < 1 || length1 < 1) {
-                    if (length0 < length1) {
-                        minLength = length0;
-                    } else {
-                        minLength = length1;
-                    }
-                    if (DELength < minLength) {
-                        minLength = DELength;
-                    }
-
-                    DELength = DELength / minLength;
-                    length0 = length0 / minLength;
-                    length1 = length1 / minLength;
+            //if one of edge lengths < 1, then find minimum length edge
+            //and divide edge lengths with minLength
+            if (DELength < 1 || length0 < 1 || length1 < 1) {
+                if (length0 < length1) {
+                    minLength = length0;
+                } else {
+                    minLength = length1;
+                }
+                if (DELength < minLength) {
+                    minLength = DELength;
                 }
 
-                if((minDs[i] == Double.POSITIVE_INFINITY &&
-                        length0 < DELength &&
-                        length1 < DELength) ||
-                        (minDs[i] != Double.POSITIVE_INFINITY &&
-                                Math.pow(length0, minDs[i]) + Math.pow(length1, minDs[i])
-                                        <= Math.pow(DELength, minDs[i]))) {
-                    Double newD = solveForDSecant(DELength, length0, length1);
-                    if (newD < minDs[i]) {
-                        minDs[i] = newD;
-                        Zmax = getZmax(DE, i, minDs);
-                    }
+                DELength = DELength / minLength;
+                length0 = length0 / minLength;
+                length1 = length1 / minLength;
+            }
+
+            if((minDs[i] == Double.POSITIVE_INFINITY &&
+                    length0 < DELength &&
+                    length1 < DELength) ||
+                    (minDs[i] != Double.POSITIVE_INFINITY &&
+                            Math.pow(length0, minDs[i]) + Math.pow(length1, minDs[i])
+                                    <= Math.pow(DELength, minDs[i]))) {
+                Double newD = solveForDSecant(DELength, length0, length1);
+                if (newD < minDs[i]) {
+                    minDs[i] = newD;
+                    Zmax = getZmax(DE, i, minDs);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
             if (nextMaskingEdge == null) {
