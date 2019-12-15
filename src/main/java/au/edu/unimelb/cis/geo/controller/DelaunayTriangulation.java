@@ -7,7 +7,7 @@ import org.locationtech.jts.geom.Coordinate;
 
 import java.util.*;
 
-import static au.edu.unimelb.cis.geo.model.util.isPointClockwiseFromLine;
+import static au.edu.unimelb.cis.geo.controller.utils.util.isPointClockwiseFromLine;
 
 public class DelaunayTriangulation {
     private ArrayList<Coordinate> DelaunayPoints = new ArrayList<Coordinate>();

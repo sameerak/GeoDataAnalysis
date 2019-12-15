@@ -1,10 +1,10 @@
-package au.edu.unimelb.cis.geo.model;
+package au.edu.unimelb.cis.geo.controller.utils;
 
 
+import au.edu.unimelb.cis.geo.model.Line;
 import org.locationtech.jts.geom.Coordinate;
 
 public class util {
-    public static long miliSeconds_perDay = 24 * 60 * 60 * 1000;
 
     //line direction is 0 -> 1
     public static boolean isPointClockwiseFromLine(Coordinate point, Line line) {

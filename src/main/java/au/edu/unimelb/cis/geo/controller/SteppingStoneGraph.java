@@ -7,7 +7,7 @@ import org.locationtech.jts.geom.Coordinate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static au.edu.unimelb.cis.geo.model.util.*;
+import static au.edu.unimelb.cis.geo.controller.utils.util.*;
 
 public class SteppingStoneGraph {
     private HashMap<String, Line> edgeSet;
