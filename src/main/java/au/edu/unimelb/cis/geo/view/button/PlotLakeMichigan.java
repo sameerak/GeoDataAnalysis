@@ -29,32 +29,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static au.edu.unimelb.cis.geo.model.Resources.Lake_Michigan;
-import static au.edu.unimelb.cis.geo.view.util.UIUtils.createGeneralPointStyle;
-import static au.edu.unimelb.cis.geo.view.util.UIUtils.getLineFeature;
+import static au.edu.unimelb.cis.geo.view.util.UIUtils.*;
 
 public class PlotLakeMichigan extends SafeAction {
     private MapContent map;
     private Layer pointLayer;
-    private Layer DelaunayTriangulation;
+    private Layer DelaunayTriangulationLayer;
     private Layer gabrielGraphLayer;
     private Layer steppingStoneGraphLayer;
+    private JComboBox CMBgraphList, CMBconfigValuesList;
 
-    public PlotLakeMichigan(MapContent map) {
+    public PlotLakeMichigan(MapContent map, JComboBox CMBgraphList, JComboBox CMBconfigValuesList) {
         super("LakeMichigan");
         this.map = map;
+        this.CMBgraphList = CMBgraphList;
+        this.CMBconfigValuesList = CMBconfigValuesList;
         putValue(Action.SHORT_DESCRIPTION, "Plot boundary points of Michigan Lake");
-    }
-
-    private void clearLayers() {
-        if (pointLayer != null) {
-            map.removeLayer(pointLayer);
-        }
-        if (DelaunayTriangulation != null) {
-            map.removeLayer(DelaunayTriangulation);
-        }
-        if (gabrielGraphLayer != null) {
-            map.removeLayer(gabrielGraphLayer);
-        }
     }
 
     private Set<Coordinate> getLakeMichiganPointSet() {
@@ -73,7 +63,15 @@ public class PlotLakeMichigan extends SafeAction {
     }
 
     public void action(ActionEvent e) throws Throwable {
-        clearLayers();
+        if (DelaunayTriangulationLayer != null) {
+            map.removeLayer(DelaunayTriangulationLayer);
+        }
+        if (gabrielGraphLayer != null) {
+            map.removeLayer(gabrielGraphLayer);
+        }
+        if (steppingStoneGraphLayer != null) {
+            map.removeLayer(steppingStoneGraphLayer);
+        }
 
         SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
         b.setName("PlotUserDataFeatureType");
@@ -105,40 +103,44 @@ public class PlotLakeMichigan extends SafeAction {
         pointLayer = new FeatureLayer(featureCollection, style);
         map.addLayer(pointLayer);
 
-        DefaultFeatureCollection lineCollection = new DefaultFeatureCollection();
         DelaunayTriangulation DTCreator = new DelaunayTriangulation();
         ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(uniqueLocalities);
 
-        for (int i = 0; i < DelaunayEdges.size(); i++) {
-            lineCollection.add(getLineFeature(DelaunayEdges.get(i).getEndPoints()));
+        if (CMBgraphList.getSelectedIndex() == 0) {
+            DefaultFeatureCollection lineCollection = new DefaultFeatureCollection();
+            for (int i = 0; i < DelaunayEdges.size(); i++) {
+                lineCollection.add(getLineFeature(DelaunayEdges.get(i).getEndPoints()));
+            }
+
+            Style linestyle = SLD.createLineStyle(Color.red, 0.1F);
+            DelaunayTriangulationLayer = new FeatureLayer(lineCollection, linestyle);
+            map.addLayer(DelaunayTriangulationLayer);
+        } else if (CMBgraphList.getSelectedIndex() == 1) {
+            GabrielGraph gabrielGraph = new GabrielGraph(DTCreator);
+            ArrayList<Line> gabrielEdges = gabrielGraph.getEdgeList();
+            DefaultFeatureCollection gabrielLineCollection = new DefaultFeatureCollection();
+
+            for (int i = 0; i < gabrielEdges.size(); i++) {
+                gabrielLineCollection.add(getLineFeature(gabrielEdges.get(i).getEndPoints()));
+            }
+
+            Style gabrielLineStyle = SLD.createLineStyle(Color.blue, 0.1F);
+            gabrielGraphLayer = new FeatureLayer(gabrielLineCollection, gabrielLineStyle);
+            map.addLayer(gabrielGraphLayer);
+        } else if (CMBgraphList.getSelectedIndex() == 2) {
+            SteppingStoneGraph steppingStoneGraph = new SteppingStoneGraph(DTCreator);
+            ArrayList<Line> steppingStoneGraphEdges =
+                    steppingStoneGraph.getSteppingStoneGraphEdges(
+                            CONFIGURATION_VALUES[CMBconfigValuesList.getSelectedIndex()]);
+            DefaultFeatureCollection SSGLineCollection = new DefaultFeatureCollection();
+
+            for (int i = 0; i < steppingStoneGraphEdges.size(); i++) {
+                SSGLineCollection.add(getLineFeature(steppingStoneGraphEdges.get(i).getEndPoints()));
+            }
+
+            Style SSGLineStyle = SLD.createLineStyle(Color.green, 0.1F);
+            steppingStoneGraphLayer = new FeatureLayer(SSGLineCollection, SSGLineStyle);
+            map.addLayer(steppingStoneGraphLayer);
         }
-
-        Style linestyle = SLD.createLineStyle(Color.red, 0.1F);
-        DelaunayTriangulation = new FeatureLayer(lineCollection, linestyle);
-        map.addLayer(DelaunayTriangulation);
-
-        DefaultFeatureCollection gabrielLineCollection = new DefaultFeatureCollection();
-        GabrielGraph gabrielGraph = new GabrielGraph(DTCreator);
-        ArrayList<Line> gabrielEdges = gabrielGraph.getEdgeList();
-
-        for (int i = 0; i < gabrielEdges.size(); i++) {
-            gabrielLineCollection.add(getLineFeature(gabrielEdges.get(i).getEndPoints()));
-        }
-
-        Style gabrielLineStyle = SLD.createLineStyle(Color.blue, 0.1F);
-        gabrielGraphLayer = new FeatureLayer(gabrielLineCollection, gabrielLineStyle);
-        map.addLayer(gabrielGraphLayer);
-
-        DefaultFeatureCollection SSGLineCollection = new DefaultFeatureCollection();
-        SteppingStoneGraph steppingStoneGraph = new SteppingStoneGraph(DTCreator);
-        ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(4);
-
-        for (int i = 0; i < steppingStoneGraphEdges.size(); i++) {
-            SSGLineCollection.add(getLineFeature(steppingStoneGraphEdges.get(i).getEndPoints()));
-        }
-
-        Style SSGLineStyle = SLD.createLineStyle(Color.green, 0.1F);
-        steppingStoneGraphLayer = new FeatureLayer(SSGLineCollection, SSGLineStyle);
-        map.addLayer(steppingStoneGraphLayer);
     }
 }

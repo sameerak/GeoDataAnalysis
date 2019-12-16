@@ -17,6 +17,7 @@ import org.opengis.filter.FilterFactory2;
 import java.awt.*;
 
 public class UIUtils {
+    public static double[] CONFIGURATION_VALUES = { 2, 3, 4, 8, 16, Double.POSITIVE_INFINITY};
 
     /**
      * Create a Style to draw point features

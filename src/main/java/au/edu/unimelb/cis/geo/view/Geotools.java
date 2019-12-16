@@ -65,6 +65,9 @@ public class Geotools {
     private static ArrayList<Layer> clusterLayers = null;
     private static JMapFrame mapFrame;
 
+    private static String[] graphNameStrings = { "Delaunay Triangulation", "Gabriel Graph", "Stepping Stone Graph"};
+    private static String[] configurationValues = { "2", "3", "4", "8", "16", "INFINITY"};
+
     public static void Start() throws ParseException, IOException {
         startDatePanel = new DatePanel(df.parse("2012-03-23 00:00:00"));
         endDatePanel = new DatePanel(df.parse("2012-03-24 00:00:00"));
@@ -94,9 +97,19 @@ public class Geotools {
 //        datePanel.add(endDatePanel);
 //        toolBar.add(datePanel);
 
+//Create the combo box, select item at index 4.
+//Indices start at 0, so 4 specifies the pig.
+        JComboBox CMBgraphList = new JComboBox(graphNameStrings);
+        CMBgraphList.setSelectedIndex(0);
+
+        JComboBox CMBconfigValuesList = new JComboBox(configurationValues);
+        CMBconfigValuesList.setSelectedIndex(0);
+
         JPanel customPanel = new JPanel();
-        customPanel.add(new JButton(new PlotLakeMichigan(map)));
-        customPanel.add(new JButton(new PlotExperimentPoints(map)));
+        customPanel.add(CMBgraphList);
+        customPanel.add(CMBconfigValuesList);
+        customPanel.add(new JButton(new PlotLakeMichigan(map, CMBgraphList, CMBconfigValuesList)));
+        customPanel.add(new JButton(new PlotExperimentPoints(map, CMBgraphList, CMBconfigValuesList)));
         toolBar.add(customPanel);
 
         mapFrame.setSize(900, 600);
