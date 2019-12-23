@@ -59,10 +59,6 @@ public class Geotools {
     private static DatePanel endDatePanel;
 
     private static MapContent map;
-    private static Layer pointLayer = null;
-    private static Layer trajectoryLayer = null;
-    private static Layer DelaunayTriangulation = null;
-    private static ArrayList<Layer> clusterLayers = null;
     private static JMapFrame mapFrame;
 
     private static String[] graphNameStrings = { "Delaunay Triangulation", "Gabriel Graph", "Stepping Stone Graph"};
