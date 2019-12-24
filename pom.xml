@@ -6,7 +6,7 @@
 
   <groupId>au.edu.unimelb.cis.geo</groupId>
   <artifactId>geo-data-analysis</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <name>au.edu.unimelb.cis.geo.tools</name>
   <!-- FIXME change it to the project's website -->
