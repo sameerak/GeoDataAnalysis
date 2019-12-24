@@ -2,6 +2,7 @@ package au.edu.unimelb.cis.geo.view;
 
 import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
 import au.edu.unimelb.cis.geo.model.Line;
+import au.edu.unimelb.cis.geo.view.button.ExportSVG;
 import au.edu.unimelb.cis.geo.view.button.PlotExperimentPoints;
 import au.edu.unimelb.cis.geo.view.button.PlotLakeMichigan;
 import au.edu.unimelb.cis.geo.view.util.DatePanel;
@@ -107,6 +108,10 @@ public class Geotools {
         customPanel.add(new JButton(new PlotLakeMichigan(map, CMBgraphList, CMBconfigValuesList)));
         customPanel.add(new JButton(new PlotExperimentPoints(map, CMBgraphList, CMBconfigValuesList)));
         toolBar.add(customPanel);
+
+        JPanel savePanel = new JPanel();
+        savePanel.add(new JButton(new ExportSVG(mapFrame, map)));
+        toolBar.add(savePanel);
 
         mapFrame.setSize(900, 600);
         mapFrame.setVisible(true);

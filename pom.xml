@@ -63,6 +63,12 @@
       <artifactId>gt-swing</artifactId>
       <version>${geotools.version}</version>
     </dependency>
+    <!-- export SVG - https://github.com/ianturton/ShapefileViewer/blob/master/shapefileviewer/pom.xml -->
+    <dependency>
+      <groupId>org.apache.xmlgraphics</groupId>
+      <artifactId>batik-svggen</artifactId>
+      <version>1.7</version>
+    </dependency>
   </dependencies>
 
   <build>
