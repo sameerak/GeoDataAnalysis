@@ -106,8 +106,8 @@ public class PlotExperimentPoints extends SafeAction {
         pointLayer = new FeatureLayer(featureCollection, style);
         map.addLayer(pointLayer);
 
-        DelaunayTriangulation DTCreator = new DelaunayTriangulation();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(experimentLocalities);
+        DelaunayTriangulation delaunayTriangulation = new DelaunayTriangulation(experimentLocalities);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
 
         if (CMBgraphList.getSelectedIndex() == 0) {
             DefaultFeatureCollection lineCollection = new DefaultFeatureCollection();
@@ -119,7 +119,7 @@ public class PlotExperimentPoints extends SafeAction {
             DelaunayTriangulationLayer = new FeatureLayer(lineCollection, linestyle);
             map.addLayer(DelaunayTriangulationLayer);
         } else if (CMBgraphList.getSelectedIndex() == 1) {
-            GabrielGraph gabrielGraph = new GabrielGraph(DTCreator);
+            GabrielGraph gabrielGraph = new GabrielGraph(delaunayTriangulation);
             ArrayList<Line> gabrielEdges = gabrielGraph.getEdgeList();
             DefaultFeatureCollection gabrielLineCollection = new DefaultFeatureCollection();
 
@@ -131,7 +131,7 @@ public class PlotExperimentPoints extends SafeAction {
             gabrielGraphLayer = new FeatureLayer(gabrielLineCollection, gabrielLineStyle);
             map.addLayer(gabrielGraphLayer);
         } else if (CMBgraphList.getSelectedIndex() == 2) {
-            SteppingStoneGraph steppingStoneGraph = new SteppingStoneGraph(DTCreator);
+            SteppingStoneGraph steppingStoneGraph = new SteppingStoneGraph(delaunayTriangulation);
             ArrayList<Line> steppingStoneGraphEdges =
                     steppingStoneGraph.getSteppingStoneGraphEdges(
                             CONFIGURATION_VALUES[CMBconfigValuesList.getSelectedIndex()]);

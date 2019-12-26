@@ -14,21 +14,21 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 
 public class SteppingStoneGraphTest {
-    private DelaunayTriangulation DTCreator;
+    private DelaunayTriangulation delaunayTriangulation;
     private GabrielGraph gabrielGraph;
     private SteppingStoneGraph steppingStoneGraph;
     private HashSet<Coordinate> pointSet;
 
-    private void initDTCreator() {
-        DTCreator = new DelaunayTriangulation();
+    private void initDTCreator(HashSet<Coordinate> pointSet) {
+        delaunayTriangulation = new DelaunayTriangulation(pointSet);
     }
 
     private void clearDTCreator() {
-        DTCreator = null;
+        delaunayTriangulation = null;
     }
 
     private void initGabrielGraph() {
-        gabrielGraph = new GabrielGraph(DTCreator);
+        gabrielGraph = new GabrielGraph(delaunayTriangulation);
     }
 
     private void clearGabrielGraph() {
@@ -36,7 +36,7 @@ public class SteppingStoneGraphTest {
     }
 
     private void initSteppingStoneGraph() {
-        steppingStoneGraph = new SteppingStoneGraph(DTCreator);
+        steppingStoneGraph = new SteppingStoneGraph(delaunayTriangulation);
     }
 
     private void clearSteppingStoneGraph() {
@@ -57,8 +57,8 @@ public class SteppingStoneGraphTest {
     @Test
     public void TestSimpleTriangle() {
         initSimpleTriangle();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
         initSteppingStoneGraph();
 
@@ -90,8 +90,8 @@ public class SteppingStoneGraphTest {
     @Test
     public void TestSimpleTwoTriangles() {
         initSimpleTwoTriangles();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
         initSteppingStoneGraph();
 
@@ -122,8 +122,8 @@ public class SteppingStoneGraphTest {
     @Ignore //This point set is included in PyramidAndTetrahedron
     public void TestTetrahedron() {
         initTetrahedron();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
         initSteppingStoneGraph();
 
@@ -154,8 +154,8 @@ public class SteppingStoneGraphTest {
     @Ignore //This point set is included in PyramidAndTetrahedron
     public void TestIrregularPyramid() {
         initIrregularPyramid();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
         initSteppingStoneGraph();
 
@@ -193,8 +193,8 @@ public class SteppingStoneGraphTest {
     @Test
     public void TestPyramidAndTetrahedron() {
         initPyramidAndTetrahedron();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
 //        for (Line edge : DelaunayEdges) {
 //            System.out.println(edge);
 //        }
@@ -226,8 +226,8 @@ public class SteppingStoneGraphTest {
     @Test
     public void TestCounterUrquhartGraph() {
         initCounterUrquhartGraph();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initSteppingStoneGraph();
 
         ArrayList<Line> steppingStoneGraphEdges = steppingStoneGraph.getSteppingStoneGraphEdges(2);

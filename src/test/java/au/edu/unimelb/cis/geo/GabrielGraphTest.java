@@ -13,20 +13,20 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 
 public class GabrielGraphTest {
-    private DelaunayTriangulation DTCreator;
+    private DelaunayTriangulation delaunayTriangulation;
     private GabrielGraph gabrielGraph;
     private HashSet<Coordinate> pointSet;
 
-    private void initDTCreator() {
-        DTCreator = new DelaunayTriangulation();
+    private void initDTCreator(HashSet<Coordinate> pointSet) {
+        delaunayTriangulation = new DelaunayTriangulation(pointSet);
     }
 
     private void clearDTCreator() {
-        DTCreator = null;
+        delaunayTriangulation = null;
     }
 
     private void initGabrielGraph() {
-        gabrielGraph = new GabrielGraph(DTCreator);
+        gabrielGraph = new GabrielGraph(delaunayTriangulation);
     }
 
     private void clearGabrielGraph() {
@@ -47,8 +47,8 @@ public class GabrielGraphTest {
     @Test
     public void TestSimpleTriangle() {
         initSimpleTriangle();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
 
         assertEquals(3, gabrielGraph.getEdgeList().size());
@@ -76,8 +76,8 @@ public class GabrielGraphTest {
     @Test
     public void TestSimpleTwoTriangles() {
         initSimpleTwoTriangles();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        initDTCreator(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
 
         assertEquals(5, gabrielGraph.getEdgeList().size());
@@ -108,9 +108,9 @@ public class GabrielGraphTest {
     @Ignore //This point set is included in PyramidAndTetrahedron
     public void TestTetrahedron() {
         initTetrahedron();
-        initDTCreator();
+        initDTCreator(pointSet);
 
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
 //        for (Line edge : gabrielGraph.getEdgeList()) {
 //            System.out.println(edge);
@@ -146,9 +146,9 @@ public class GabrielGraphTest {
     @Test
     public void TestPyramidAndTetrahedron() {
         initPyramidAndTetrahedron();
-        initDTCreator();
+        initDTCreator(pointSet);
 
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         initGabrielGraph();
 //        for (Line edge : gabrielGraph.getEdgeList()) {
 //            System.out.println(edge);

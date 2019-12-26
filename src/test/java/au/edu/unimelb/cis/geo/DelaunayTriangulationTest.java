@@ -13,17 +13,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class DelaunayTriangulationTest {
-    private DelaunayTriangulation DTCreator;
+    private DelaunayTriangulation delaunayTriangulation;
     private HashSet<Coordinate> simpleTriangle;
     private HashSet<Coordinate> simpleTwoTriangles;
     private HashSet<Coordinate> pointSet;
 
-    private void initDTCreator() {
-        DTCreator = new DelaunayTriangulation();
+    private void initDelaunayTriangulation(HashSet<Coordinate> pointSet) {
+        delaunayTriangulation = new DelaunayTriangulation(pointSet);
     }
 
     private void clearDTCreator() {
-        DTCreator = null;
+        delaunayTriangulation = null;
     }
 
     private void initSimpleTriangle() {
@@ -40,8 +40,8 @@ public class DelaunayTriangulationTest {
     @Test
     public void TestSimpleTriangle() {
         initSimpleTriangle();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(simpleTriangle);
+        initDelaunayTriangulation(simpleTriangle);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
 
         assertEquals(3, DelaunayEdges.size());
 //        assertEquals("(1.0, 1.0, NaN) -> (1.0, 2.0, NaN)", DelaunayEdges.get(0).toString());
@@ -67,8 +67,8 @@ public class DelaunayTriangulationTest {
     @Test
     public void TestSimpleTwoTriangles() {
         initSimpleTwoTriangles();
-        initDTCreator();
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(simpleTwoTriangles);
+        initDelaunayTriangulation(simpleTwoTriangles);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
 
         assertEquals(5, DelaunayEdges.size());
         assertEquals("(1.0, 2.0, NaN) -> (2.0, 2.5, NaN)", DelaunayEdges.get(0).toString());
@@ -97,9 +97,9 @@ public class DelaunayTriangulationTest {
     @Test
     public void TestCounterUrquhartGraph() {
         initCounterUrquhartGraph();
-        initDTCreator();
+        initDelaunayTriangulation(pointSet);
 
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
 //        for (Line edge : DelaunayEdges) {
 //            System.out.println(edge);
 //        }
@@ -125,9 +125,9 @@ public class DelaunayTriangulationTest {
     @Ignore //This point set is included in PyramidAndTetrahedron
     public void TestTetrahedron() {
         initTetrahedron();
-        initDTCreator();
+        initDelaunayTriangulation(pointSet);
 
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         assertEquals(6, DelaunayEdges.size());
 
         clearTetrahedron();
@@ -151,9 +151,9 @@ public class DelaunayTriangulationTest {
     @Ignore //This point set is included in PyramidAndTetrahedron
     public void TestIrregularPyramid() {
         initIrregularPyramid();
-        initDTCreator();
+        initDelaunayTriangulation(pointSet);
 
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
         assertEquals(8, DelaunayEdges.size());
 
         clearIrregularPyramid();
@@ -184,9 +184,9 @@ public class DelaunayTriangulationTest {
     @Test
     public void TestPyramidAndTetrahedron() {
         initPyramidAndTetrahedron();
-        initDTCreator();
+        initDelaunayTriangulation(pointSet);
 
-        ArrayList<Line> DelaunayEdges = DTCreator.createDelaunayTriangulation(pointSet);
+        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
 //        for (Line edge : DelaunayEdges) {
 //            System.out.println(edge);
 //        }
