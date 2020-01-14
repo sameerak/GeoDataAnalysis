@@ -6,7 +6,8 @@ import org.locationtech.jts.geom.Coordinate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+
+import static au.edu.unimelb.cis.geo.controller.utils.util.getPointNotOnEdge;
 
 public class GabrielGraph {
     private HashMap<String, Line> edgeSet = new HashMap<String, Line>();
@@ -50,19 +51,12 @@ public class GabrielGraph {
         double AB = endpoints[0].distance(endpoints[1]),
                 AC = endpoints[0].distance(c),
                 BC = endpoints[1].distance(c),
-                minLength = Double.MAX_VALUE;
+                minLength;
 
         //if one of edge lengths < 1, then find minimum length edge
         //and divide edge lengths with minLength
         if (AB < 1 || AC < 1 || BC < 1) {
-            if (AC < BC) {
-                minLength = AC;
-            } else {
-                minLength = BC;
-            }
-            if (AB < minLength) {
-                minLength = AB;
-            }
+            minLength = Math.min(AB, Math.min(AC, BC));
 
             AB = AB / minLength;
             AC = AC / minLength;
@@ -70,17 +64,6 @@ public class GabrielGraph {
         }
 
         return (Math.pow(AB, 2) < (Math.pow(AC, 2) + Math.pow(BC, 2)));
-    }
-
-    private Coordinate getPointNotOnEdge(Line edge, Triangle delaunayTriangle) {
-        Coordinate[] vertices = delaunayTriangle.getVertices();
-        Coordinate[] endpoints = edge.getEndPoints();
-        for (Coordinate vertex :vertices) {
-            if (vertex != endpoints[0] && vertex != endpoints[1]) {
-                return vertex;
-            }
-        }
-        return null;
     }
 
     public ArrayList<Line> getEdgeList() {

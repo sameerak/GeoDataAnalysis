@@ -2,6 +2,7 @@ package au.edu.unimelb.cis.geo.controller.utils;
 
 
 import au.edu.unimelb.cis.geo.model.Line;
+import au.edu.unimelb.cis.geo.model.Triangle;
 import org.locationtech.jts.geom.Coordinate;
 
 public class util {
@@ -94,5 +95,16 @@ public class util {
 //        fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
 //        System.out.println("fx = " + fx);
         return D;
+    }
+
+    public static Coordinate getPointNotOnEdge(Line edge, Triangle triangle) {
+        Coordinate[] vertices = triangle.getVertices();
+        Coordinate[] endpoints = edge.getEndPoints();
+        for (Coordinate vertex :vertices) {
+            if (vertex != endpoints[0] && vertex != endpoints[1]) {
+                return vertex;
+            }
+        }
+        return null;
     }
 }

@@ -101,7 +101,7 @@ public class DelaunayTriangulation {
         convexHull.add(x_k);
 
         //7. add initial 3 edges to Delaunay Triangulation;
-         vertices[0] = x_o;
+        vertices[0] = x_o;
         vertices[1] = x_j;
         vertices[2] = x_k;
         triangle = new Triangle(vertices);

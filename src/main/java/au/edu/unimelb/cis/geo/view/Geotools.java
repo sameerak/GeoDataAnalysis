@@ -62,7 +62,7 @@ public class Geotools {
     private static MapContent map;
     private static JMapFrame mapFrame;
 
-    private static String[] graphNameStrings = { "Delaunay Triangulation", "Gabriel Graph", "Stepping Stone Graph"};
+    private static String[] graphNameStrings = { "Delaunay Triangulation", "Gabriel Graph", "Stepping Stone Graph", "New Graph"};
     private static String[] configurationValues = { "2", "3", "4", "8", "16", "INFINITY"};
 
     public static void Start() throws ParseException, IOException {

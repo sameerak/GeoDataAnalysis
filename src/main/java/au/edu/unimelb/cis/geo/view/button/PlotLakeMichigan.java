@@ -2,6 +2,7 @@ package au.edu.unimelb.cis.geo.view.button;
 
 import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
 import au.edu.unimelb.cis.geo.controller.GabrielGraph;
+import au.edu.unimelb.cis.geo.controller.NewGraph;
 import au.edu.unimelb.cis.geo.controller.SteppingStoneGraph;
 import au.edu.unimelb.cis.geo.model.Line;
 import org.geotools.feature.DefaultFeatureCollection;
@@ -140,6 +141,19 @@ public class PlotLakeMichigan extends SafeAction {
 
             Style SSGLineStyle = SLD.createLineStyle(Color.green, 0.1F);
             steppingStoneGraphLayer = new FeatureLayer(SSGLineCollection, SSGLineStyle);
+            map.addLayer(steppingStoneGraphLayer);
+        } else if (CMBgraphList.getSelectedIndex() == 3) {
+            NewGraph newGraph = new NewGraph(delaunayTriangulation);
+            ArrayList<Line> newGraphEdges = newGraph.getNewGraph(
+                    CONFIGURATION_VALUES[CMBconfigValuesList.getSelectedIndex()]);
+            DefaultFeatureCollection NGLineCollection = new DefaultFeatureCollection();
+
+            for (int i = 0; i < newGraphEdges.size(); i++) {
+                NGLineCollection.add(getLineFeature(newGraphEdges.get(i).getEndPoints()));
+            }
+
+            Style NGLineStyle = SLD.createLineStyle(Color.magenta, 0.1F);
+            steppingStoneGraphLayer = new FeatureLayer(NGLineCollection, NGLineStyle);
             map.addLayer(steppingStoneGraphLayer);
         }
     }
