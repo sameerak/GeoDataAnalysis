@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 import static au.edu.unimelb.cis.geo.controller.utils.util.getPointNotOnEdge;
 
-public class NewGraph {
+public class DiversionGraph {
     private DelaunayTriangulation delaunayTriangulation;
 
-    public NewGraph(DelaunayTriangulation delaunayTriangulation) {
+    public DiversionGraph(DelaunayTriangulation delaunayTriangulation) {
         this.delaunayTriangulation = delaunayTriangulation;
 
     }
