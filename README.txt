@@ -7,7 +7,10 @@ Gaberiel Graph [6]
 - Gabriel Graph is constructed using the Delaunay triangulation as the input [7].
 
 Stepping Stone Graph [8]
-- Graph useful to analyze movement aspects of a data set.
+- A graph useful to analyze movement aspects of a data set.
+
+Diversion Graph
+- A graph similar to the Stepping Stone Graph, but faster to create.
 
 
 [1] https://www.geotools.org/
