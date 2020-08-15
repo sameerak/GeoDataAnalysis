@@ -1,7 +1,7 @@
-An implemetation that uses geotools quickstart [1], to analyse GPS data.
+An implemetation that uses geotools quickstart [1,2,3], to analyse GPS data.
 
 Delaunay Triangulation [4]
-- Along with this tool, Java implementation of S-hull algorithm [4] for finding the Delaunay triangulation of a point set is available.
+- Along with this tool, Java implementation of S-hull algorithm [5] for finding the Delaunay triangulation of a point set is available.
 
 Gaberiel Graph [6]
 - Gabriel Graph is constructed using the Delaunay triangulation as the input [7].
