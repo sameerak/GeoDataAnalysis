@@ -2,6 +2,7 @@ package au.edu.unimelb.cis.geo;
 
 import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
 import au.edu.unimelb.cis.geo.model.Line;
+import au.edu.unimelb.cis.geo.model.Triangle;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -9,8 +10,7 @@ import org.locationtech.jts.geom.Coordinate;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DelaunayTriangulationTest {
     private DelaunayTriangulation delaunayTriangulation;
@@ -191,6 +191,13 @@ public class DelaunayTriangulationTest {
 //            System.out.println(edge);
 //        }
         assertEquals(13, DelaunayEdges.size());
+
+        for (Triangle triangle : delaunayTriangulation.getTriangleSet().values()) {
+            Line[] edges = triangle.getEdges();
+            for (Line edge : edges) {
+                assertNotNull(edge);
+            }
+        }
 
         clearPyramidAndTetrahedron();
         clearDTCreator();

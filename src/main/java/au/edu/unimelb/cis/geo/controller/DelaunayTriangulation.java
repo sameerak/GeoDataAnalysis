@@ -284,9 +284,9 @@ public class DelaunayTriangulation {
             int j = (i == 2) ? 0 : i + 1;
             Line line = getFromLineSet(triangle.getVertices()[i], triangle.getVertices()[j]);
             line.addNeighbour(triangle.getIndex());
+            edges[i] = line;
             if (line.getNumOfNeighbours() == 1) {
                 triangle.addNeighbour(line.getAdjacentNeighbours()[0]);
-                edges[i] = line;
             } else {
                 continue;
             }
