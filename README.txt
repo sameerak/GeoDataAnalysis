@@ -12,6 +12,9 @@ Stepping Stone Graph [8]
 Diversion Graph
 - A graph similar to the Stepping Stone Graph, but faster to create.
 
+Shortest Path Graph [9]
+- This graph aims to align created edges along the shortest paths taken over the given point set.
+
 
 [1] https://www.geotools.org/
 [2] http://docs.geotools.org/latest/userguide/tutorial/quickstart/index.html
@@ -21,3 +24,4 @@ Diversion Graph
 [6] https://en.wikipedia.org/wiki/Gabriel_graph
 [7] https://academic.oup.com/sysbio/article-abstract/18/3/259/1624465
 [8] https://dl.acm.org/doi/10.1145/3274895.3274913
+[9] https://dl.acm.org/doi/abs/10.1145/2093973.2094010
