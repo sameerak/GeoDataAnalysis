@@ -33,13 +33,15 @@ public class DelaunayTriangulation {
         }
 
         uniqueCoordinates.addAll(locationsMap.keySet());
+        ArrayList<Coordinate> processingCoordinates = new ArrayList<Coordinate>();
+        processingCoordinates.addAll(locationsMap.keySet());
         locationsMap = null; //saving space
 
         //log the number of points to create Delaunay triangulation on
 //        System.out.println("INFO: # of points for Delaunay graph = " + DelaunayPoints.size());
 
         //validate number of points
-        if (uniqueCoordinates.size() < 3) {
+        if (processingCoordinates.size() < 3) {
             return; //not enough points
         }
 
@@ -47,15 +49,15 @@ public class DelaunayTriangulation {
         //S-hull algorithm [http://www.s-hull.org/paper/s_hull.pdf]
 
         //1. sort points
-        Collections.sort(uniqueCoordinates);
+        Collections.sort(processingCoordinates);
         //2. select a x_o point randomly from x_i
-        Coordinate x_o = uniqueCoordinates.get(0);
+        Coordinate x_o = processingCoordinates.get(0);
         //3. find the point x_j closest to x_0
-        Coordinate x_j = uniqueCoordinates.get(1);
+        Coordinate x_j = processingCoordinates.get(1);
 
         //remove x_o and x_j from further processing
-        uniqueCoordinates.remove(0);
-        uniqueCoordinates.remove(0);
+        processingCoordinates.remove(0);
+        processingCoordinates.remove(0);
 
         //4. find the point x_k that creates the smallest circumCircle
         // with x_0 and x_j and record the center of the circum-circle C
@@ -63,10 +65,10 @@ public class DelaunayTriangulation {
         double minCircumRadius = Double.MAX_VALUE;
         Triangle triangle;
         Coordinate[] vertices = new Coordinate[3];
-        for (int i = 0; i < uniqueCoordinates.size(); i++) {
+        for (int i = 0; i < processingCoordinates.size(); i++) {
             vertices[0] = x_o;
             vertices[1] = x_j;
-            vertices[2] = uniqueCoordinates.get(i);
+            vertices[2] = processingCoordinates.get(i);
 
             triangle = new Triangle(vertices);
 
@@ -79,10 +81,10 @@ public class DelaunayTriangulation {
                 i_x_k = i;
             }
         }
-        Coordinate x_k = uniqueCoordinates.get(i_x_k);
+        Coordinate x_k = processingCoordinates.get(i_x_k);
 
         //remove x_k from further processing
-        uniqueCoordinates.remove(i_x_k);
+        processingCoordinates.remove(i_x_k);
 
         //5. order point x_0, x_j, x_k to give a right handed (clockwise) system this is the initial x_o convex hull
         //create line in the order x_0, x_j and check x_k is clockwise or not relative to line
@@ -123,7 +125,7 @@ public class DelaunayTriangulation {
         // to give points s_i
         triangle.SetCircumRadius();
         Coordinate c = triangle.getCircumcenter();
-        Collections.sort(uniqueCoordinates, (Comparator.<Coordinate>
+        Collections.sort(processingCoordinates, (Comparator.<Coordinate>
                 comparingDouble(point1 -> point1.distance(c))
                 .thenComparingDouble(point2 -> point2.distance(c))));
 
@@ -131,7 +133,7 @@ public class DelaunayTriangulation {
         // that is seeded with the triangle formed from x_0, x_j, x_k
         // as a new point is added the facets of the 2D-hull that are visible to it form new triangles
         int resetID = 0; // To store the convex hull position to be replaced
-        for (Coordinate point : uniqueCoordinates) {
+        for (Coordinate point : processingCoordinates) {
             ArrayList<Integer> postProcessIds = new ArrayList<Integer>();
             for (int i = 0; i < convexHull.size(); i++) {
                 int h = (i - 1 < 0) ? convexHull.size() - 1 : i - 1;
