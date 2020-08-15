@@ -1,9 +1,6 @@
 package au.edu.unimelb.cis.geo.view.button;
 
-import au.edu.unimelb.cis.geo.controller.DelaunayTriangulation;
-import au.edu.unimelb.cis.geo.controller.GabrielGraph;
-import au.edu.unimelb.cis.geo.controller.DiversionGraph;
-import au.edu.unimelb.cis.geo.controller.SteppingStoneGraph;
+import au.edu.unimelb.cis.geo.controller.*;
 import au.edu.unimelb.cis.geo.model.Line;
 import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
@@ -153,6 +150,19 @@ public class PlotLakeMichigan extends SafeAction {
             }
 
             Style NGLineStyle = SLD.createLineStyle(Color.magenta, 0.1F);
+            steppingStoneGraphLayer = new FeatureLayer(NGLineCollection, NGLineStyle);
+            map.addLayer(steppingStoneGraphLayer);
+        } else if (CMBgraphList.getSelectedIndex() == 4) {
+            ShortestPathGraph newGraph = new ShortestPathGraph(delaunayTriangulation);
+            ArrayList<Line> newGraphEdges = newGraph.getShortestPathGraphEdges(
+                    CONFIGURATION_VALUES[CMBconfigValuesList.getSelectedIndex()]);
+            DefaultFeatureCollection NGLineCollection = new DefaultFeatureCollection();
+
+            for (int i = 0; i < newGraphEdges.size(); i++) {
+                NGLineCollection.add(getLineFeature(newGraphEdges.get(i).getEndPoints()));
+            }
+
+            Style NGLineStyle = SLD.createLineStyle(Color.cyan, 0.1F);
             steppingStoneGraphLayer = new FeatureLayer(NGLineCollection, NGLineStyle);
             map.addLayer(steppingStoneGraphLayer);
         }
