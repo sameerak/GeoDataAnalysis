@@ -48,9 +48,7 @@ import static au.edu.unimelb.cis.geo.view.util.UIUtils.*;
 public class PlotLakeMichigan extends SafeAction {
     private MapContent map;
     private Layer pointLayer;
-    private Layer DelaunayTriangulationLayer;
-    private Layer gabrielGraphLayer;
-    private Layer steppingStoneGraphLayer;
+    private Layer graphLayer;
     private JComboBox CMBgraphList, CMBconfigValuesList;
 
     public PlotLakeMichigan(MapContent map, JComboBox CMBgraphList, JComboBox CMBconfigValuesList) {
@@ -77,14 +75,8 @@ public class PlotLakeMichigan extends SafeAction {
     }
 
     public void action(ActionEvent e) throws Throwable {
-        if (DelaunayTriangulationLayer != null) {
-            map.removeLayer(DelaunayTriangulationLayer);
-        }
-        if (gabrielGraphLayer != null) {
-            map.removeLayer(gabrielGraphLayer);
-        }
-        if (steppingStoneGraphLayer != null) {
-            map.removeLayer(steppingStoneGraphLayer);
+        if (graphLayer != null) {
+            map.removeLayer(graphLayer);
         }
 
         SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
@@ -127,8 +119,8 @@ public class PlotLakeMichigan extends SafeAction {
             }
 
             Style linestyle = SLD.createLineStyle(Color.red, 0.1F);
-            DelaunayTriangulationLayer = new FeatureLayer(lineCollection, linestyle);
-            map.addLayer(DelaunayTriangulationLayer);
+            graphLayer = new FeatureLayer(lineCollection, linestyle);
+            map.addLayer(graphLayer);
         } else if (CMBgraphList.getSelectedIndex() == 1) {
             GabrielGraph gabrielGraph = new GabrielGraph(delaunayTriangulation);
             ArrayList<Line> gabrielEdges = gabrielGraph.getEdgeList();
@@ -139,8 +131,8 @@ public class PlotLakeMichigan extends SafeAction {
             }
 
             Style gabrielLineStyle = SLD.createLineStyle(Color.blue, 0.1F);
-            gabrielGraphLayer = new FeatureLayer(gabrielLineCollection, gabrielLineStyle);
-            map.addLayer(gabrielGraphLayer);
+            graphLayer = new FeatureLayer(gabrielLineCollection, gabrielLineStyle);
+            map.addLayer(graphLayer);
         } else if (CMBgraphList.getSelectedIndex() == 2) {
             SteppingStoneGraph steppingStoneGraph = new SteppingStoneGraph(delaunayTriangulation);
             ArrayList<Line> steppingStoneGraphEdges =
@@ -153,8 +145,8 @@ public class PlotLakeMichigan extends SafeAction {
             }
 
             Style SSGLineStyle = SLD.createLineStyle(Color.green, 0.1F);
-            steppingStoneGraphLayer = new FeatureLayer(SSGLineCollection, SSGLineStyle);
-            map.addLayer(steppingStoneGraphLayer);
+            graphLayer = new FeatureLayer(SSGLineCollection, SSGLineStyle);
+            map.addLayer(graphLayer);
         } else if (CMBgraphList.getSelectedIndex() == 3) {
             DiversionGraph newGraph = new DiversionGraph(delaunayTriangulation);
             ArrayList<Line> newGraphEdges = newGraph.getNewGraph(
@@ -166,8 +158,8 @@ public class PlotLakeMichigan extends SafeAction {
             }
 
             Style NGLineStyle = SLD.createLineStyle(Color.magenta, 0.1F);
-            steppingStoneGraphLayer = new FeatureLayer(NGLineCollection, NGLineStyle);
-            map.addLayer(steppingStoneGraphLayer);
+            graphLayer = new FeatureLayer(NGLineCollection, NGLineStyle);
+            map.addLayer(graphLayer);
         } else if (CMBgraphList.getSelectedIndex() == 4) {
             ShortestPathGraph newGraph = new ShortestPathGraph(delaunayTriangulation);
             ArrayList<Line> newGraphEdges = newGraph.getShortestPathGraphEdges(
@@ -179,8 +171,8 @@ public class PlotLakeMichigan extends SafeAction {
             }
 
             Style NGLineStyle = SLD.createLineStyle(Color.cyan, 0.1F);
-            steppingStoneGraphLayer = new FeatureLayer(NGLineCollection, NGLineStyle);
-            map.addLayer(steppingStoneGraphLayer);
+            graphLayer = new FeatureLayer(NGLineCollection, NGLineStyle);
+            map.addLayer(graphLayer);
         }
     }
 }
