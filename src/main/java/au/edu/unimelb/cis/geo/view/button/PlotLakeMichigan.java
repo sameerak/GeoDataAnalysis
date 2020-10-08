@@ -110,9 +110,9 @@ public class PlotLakeMichigan extends SafeAction {
         map.addLayer(pointLayer);
 
         DelaunayTriangulation delaunayTriangulation = new DelaunayTriangulation(uniqueLocalities);
-        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
 
         if (CMBgraphList.getSelectedIndex() == 0) {
+            ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
             DefaultFeatureCollection lineCollection = new DefaultFeatureCollection();
             for (int i = 0; i < DelaunayEdges.size(); i++) {
                 lineCollection.add(getLineFeature(DelaunayEdges.get(i).getEndPoints()));
