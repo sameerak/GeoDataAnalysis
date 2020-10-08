@@ -118,8 +118,7 @@ public class ShortestPathGraph {
                 Coordinate otherPoint = adjLine.getEndPoints()[0] == tempPoint ?
                         adjLine.getEndPoints()[1] : adjLine.getEndPoints()[0];
 
-                ArrayList<Line> tempPath = new ArrayList<>(shortestPaths.get(tempPoint).size()+1);
-                tempPath.addAll(shortestPaths.get(tempPoint));
+                ArrayList<Line> tempPath = (ArrayList<Line>) shortestPaths.get(tempPoint).clone();
                 tempPath.add(adjLine);
                 double tempPathWeight = getWeight(tempPath, t);
                 //if tempPath is shorter than otherPoints current path, set tempPath as other points shortest path
