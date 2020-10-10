@@ -94,9 +94,7 @@ public class util {
         oldfx = Math.pow(c, previousHighD) - Math.pow(a, previousHighD) - Math.pow(b, previousHighD);
 
         int iterations = 0;
-        while (/*(Math.abs(previousHighD - D) > 0.00001)*/
-                oldfx > (Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D)) &&
-                        (Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D)) > 100) {
+        while (Math.abs(previousHighD - D) > 0.00001) { //setting sensitivity
             fx = Math.pow(c, D) - Math.pow(a, D) - Math.pow(b, D);
 //            System.out.println("fx = " + fx);
 
