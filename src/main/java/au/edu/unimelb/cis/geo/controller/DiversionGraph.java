@@ -67,15 +67,13 @@ public class DiversionGraph {
                 minLength;
 
         if (d < Double.POSITIVE_INFINITY) {
-            //if one of edge lengths < 1, then find minimum length edge
-            //and divide edge lengths with minLength
-            if (AB < 1 || AC < 1 || BC < 1) {
-                minLength = Math.min(AB, Math.min(AC, BC));
+            //Standardising the triangle by dividing edge lengths with minLength
+            minLength = Math.min(AB, Math.min(AC, BC));
 
-                AB = AB / minLength;
-                AC = AC / minLength;
-                BC = BC / minLength;
-            }
+            AB = AB / minLength;
+            AC = AC / minLength;
+            BC = BC / minLength;
+
             return (Math.pow(AB, d) >= (Math.pow(AC, d) + Math.pow(BC, d)));
         } else {
             return (AB >= AC && AB >= BC);
