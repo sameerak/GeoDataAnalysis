@@ -88,18 +88,12 @@ public class SteppingStoneGraph {
             double DELength = DE.getLength();
             double minLength;
 
-            //if one of edge lengths < 1, then find minimum length edge
-            //and divide edge lengths with minLength
-            if (DELength < 1 || length0 < 1 || length1 < 1) {
-                minLength = Math.min(length0, length1);
-                if (DELength < minLength) {
-                    minLength = DELength;
-                }
+            //Standardising the triangle by dividing edge lengths with minLength
+            minLength = Math.min(DELength, Math.min(length0, length1));
 
-                DELength = DELength / minLength;
-                length0 = length0 / minLength;
-                length1 = length1 / minLength;
-            }
+            DELength = DELength / minLength;
+            length0 = length0 / minLength;
+            length1 = length1 / minLength;
 
             if((minDs[i] == Double.POSITIVE_INFINITY && length0 < DELength && length1 < DELength) ||
                     (minDs[i] != Double.POSITIVE_INFINITY &&
