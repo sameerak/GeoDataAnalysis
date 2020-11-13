@@ -73,7 +73,7 @@ public class DiversionGraphTest {
 
         ArrayList<Line> diversionGraphEdges = diversionGraph.getDiversionGraph(2);
 
-        //Both edgeset.size() == 2
+        //Both edgeSet.size() == 2
         assertEquals(gabrielGraph.getEdgeList().size(), diversionGraphEdges.size());
 //        assertEquals("(2.0, 1.0, NaN) -> (1.0, 1.0, NaN)", steppingStoneGraphEdges.get(0).toString());
 //        assertEquals("(1.0, 1.0, NaN) -> (1.0, 2.0, NaN)", steppingStoneGraphEdges.get(1).toString());
@@ -105,7 +105,7 @@ public class DiversionGraphTest {
 
         ArrayList<Line> diversionGraphEdges = diversionGraph.getDiversionGraph(2);
 
-        //Both edgeset.size() == 5
+        //Both edgeSet.size() == 5
         assertEquals(gabrielGraph.getEdgeList().size(), diversionGraphEdges.size());
 
         clearSimpleTwoTriangles();
@@ -200,10 +200,6 @@ public class DiversionGraphTest {
     public void TestPyramidAndTetrahedron() {
         initPyramidAndTetrahedron();
         initDTCreator(pointSet);
-        ArrayList<Line> DelaunayEdges = delaunayTriangulation.getDelaunayEdges();
-//        for (Line edge : DelaunayEdges) {
-//            System.out.println(edge);
-//        }
         initGabrielGraph();
         initDiversionGraph();
 
@@ -245,6 +241,7 @@ public class DiversionGraphTest {
         assertEquals(diversionGraphEdges.size() , steppingStoneGraphEdges.size() + 1);
 
         clearCounterUrquhartGraph();
+        clearDiversionGraph();
         clearSteppingStoneGraph();
         clearDTCreator();
     }
