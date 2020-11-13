@@ -151,7 +151,7 @@ public class PlotExperimentPoints extends SafeAction {
             map.addLayer(graphLayer);
         } else if (CMBgraphList.getSelectedIndex() == 3) {
             DiversionGraph newGraph = new DiversionGraph(delaunayTriangulation);
-            ArrayList<Line> newGraphEdges = newGraph.getNewGraph(
+            ArrayList<Line> newGraphEdges = newGraph.getDiversionGraph(
                     CONFIGURATION_VALUES[CMBconfigValuesList.getSelectedIndex()]);
             DefaultFeatureCollection NGLineCollection = new DefaultFeatureCollection();
 

@@ -31,11 +31,11 @@ public class DiversionGraph {
 
     }
 
-    public ArrayList<Line> getNewGraph(double d) {
+    public ArrayList<Line> getDiversionGraph(double d) {
         ArrayList<Line> newGraphAtD = new ArrayList<>();
 
         for (Line DTEdge: delaunayTriangulation.getDelaunayEdges()) {
-            if (isToSkipFromNewGraph(DTEdge, d)) {
+            if (isToSkipFromDiversionGraph(DTEdge, d)) {
                 continue; //skip this edge
             } else {
                 newGraphAtD.add(DTEdge);
@@ -44,7 +44,7 @@ public class DiversionGraph {
         return newGraphAtD;
     }
 
-    private boolean isToSkipFromNewGraph(Line DTEdge, double d) {
+    private boolean isToSkipFromDiversionGraph(Line DTEdge, double d) {
         int[] adjacentNeighbours = DTEdge.getAdjacentNeighbours();
 
         for (int triangleID : adjacentNeighbours) {
