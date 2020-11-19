@@ -105,14 +105,6 @@ public class Geotools {
         JToolBar toolBar = mapFrame.getToolBar();
         toolBar.addSeparator();
 
-        //Start date and End date for GPS trajectory data processing
-//        JPanel datePanel = new JPanel();
-//        datePanel.add(startDatePanel);
-//        datePanel.add(endDatePanel);
-//        toolBar.add(datePanel);
-
-//Create the combo box, select item at index 4.
-//Indices start at 0, so 4 specifies the pig.
         JComboBox CMBgraphList = new JComboBox(graphNameStrings);
         CMBgraphList.setSelectedIndex(0);
 
