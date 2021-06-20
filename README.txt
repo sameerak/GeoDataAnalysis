@@ -15,6 +15,13 @@ Diversion Graph [9]
 Shortest Path Graph [10]
 - This graph aims to align created edges along the shortest paths taken over the given point set.
 
+Build and usage instructions can be found in following blog posts in http://sameerak-blog.blogspot.com/.
+
+- http://sameerak-blog.blogspot.com/2019/11/gps-data-analysis-using-geotools.html
+- http://sameerak-blog.blogspot.com/2019/12/s-hull-algorithm-for-creating-delaunay.html
+- http://sameerak-blog.blogspot.com/2019/12/gabriel-graph-and-stepping-stone-graph.html
+- http://sameerak-blog.blogspot.com/2020/08/shortest-path-graph.html
+
 
 [1] https://www.geotools.org/
 [2] http://docs.geotools.org/latest/userguide/tutorial/quickstart/index.html
