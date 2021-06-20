@@ -12,7 +12,7 @@ Stepping Stone Graph [8]
 Diversion Graph [9]
 - A graph similar to the Stepping Stone Graph, but faster to create.
 
-Shortest Path Graph [10]
+Shortest Path Graph [10, 11]
 - This graph aims to align created edges along the shortest paths taken over the given point set.
 
 Build and usage instructions can be found in following blog posts in http://sameerak-blog.blogspot.com/.
@@ -33,3 +33,4 @@ Build and usage instructions can be found in following blog posts in http://same
 [8] https://dl.acm.org/doi/10.1145/3274895.3274913
 [9] https://doi.org/10.4230/LIPIcs.GIScience.2021.I.7
 [10] https://dl.acm.org/doi/abs/10.1145/2093973.2094010
+[11] https://en.wikipedia.org/wiki/Shortest-path_graph
